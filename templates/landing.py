@@ -66,6 +66,21 @@ def create_landing_page():
                 )
             ),
 
+            # Start Planning button
+            dbc.Row(
+                dbc.Col(
+                    html.Div(
+                        [
+                            dbc.Button("Start Planning", id="start-planning-btn start-planning", href="/settings",
+                                       color="primary",
+                                       className="btn-lg")
+                        ],
+                        className="text-center mb-5"
+                    ),
+                    width=12
+                )
+            ),
+
             # Features section
             dbc.Row(
                 dbc.Col(
@@ -84,21 +99,6 @@ def create_landing_page():
                             )
                         ],
                         className="mb-5"
-                    ),
-                    width=12
-                )
-            ),
-
-            # Start Planning button
-            dbc.Row(
-                dbc.Col(
-                    html.Div(
-                        [
-                            dbc.Button("Start Planning", id="start-planning-btn start-planning", href="/settings",
-                                       color="primary",
-                                       className="btn-lg")
-                        ],
-                        className="text-center mb-5"
                     ),
                     width=12
                 )
