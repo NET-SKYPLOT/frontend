@@ -26,7 +26,7 @@ def create_landing_page():
         ],
         controls=True,
         indicators=True,
-        interval=1000,
+        interval=5000,
         ride="carousel",
         className="mb-5"
     )

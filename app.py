@@ -7,4 +7,4 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="NE
 app.layout = create_landing_page()
 
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0', port=8080)
+    app.run_server(host='0.0.0.0', port=8050)
