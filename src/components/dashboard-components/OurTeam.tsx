@@ -1,18 +1,18 @@
 const supervisor = {
     name: "Prof. Fabio Dovis",
-    role: "Course Supervisor",
+    role: "Supervisor",
     image: "/assets/img/team-members/dovis.png",
 };
 
 const tutors = [
     {
         name: "Prof. Marco Piras",
-        role: "Course Tutor",
+        role: "Tutor",
         image: "/assets/img/team-members/piras.png",
     },
     {
         name: "Prof. Vincenzo Di Pietra",
-        role: "Course Tutor",
+        role: "Tutor",
         image: "/assets/img/team-members/pietra.png",
     },
 ];

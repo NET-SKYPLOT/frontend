@@ -19,19 +19,17 @@ const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("Introduction");
 
     return (
-        <div className="flex h-screen bg-gray-50">
-            {/* Sidebar (Fixed Position) */}
+        <div className="flex h-screen w-screen bg-gray-50">
+            {/* Sidebar */}
             <Sidebar/>
 
-            {/* Main Content with Scrollable Section */}
+            {/* Main Content */}
             <main className="flex-1 flex flex-col h-screen overflow-hidden">
-                {/* Page Header & Navbar (Sticky at the Top) */}
+                {/* Page Header & Navbar */}
                 <div className="p-6 bg-white shadow-md">
-                    {/*<h1 className="text-4xl font-bold text-gray-800 mb-4">Dashboard</h1>*/}
                     <Navbar activeTab={activeTab} setActiveTab={setActiveTab}/>
                 </div>
 
-                {/* Scrollable Content Area */}
                 <div className="flex-1 overflow-y-auto p-6">
                     <ImageCarousel/>
                     <div className="mt-8">{tabComponents[activeTab]}</div>
