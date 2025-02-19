@@ -1,9 +1,7 @@
 import {Navigation, Pagination, Autoplay} from 'swiper/modules';
 import {Swiper, SwiperSlide} from 'swiper/react';
 
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import "swiper/swiper-bundle.css";
 
 import slider1 from "/assets/img/slider-1.png";
 import slider2 from "/assets/img/slider-2.png";
