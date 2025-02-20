@@ -2,6 +2,7 @@ const supervisor = {
     name: "Prof. Fabio Dovis",
     role: "Supervisor",
     image: "/assets/img/team-members/dovis.png",
+    profile: "https://www.polito.it/en/staff?p=fabio.dovis"
 };
 
 const tutors = [
@@ -9,11 +10,13 @@ const tutors = [
         name: "Prof. Marco Piras",
         role: "Tutor",
         image: "/assets/img/team-members/piras.png",
+        profile: "https://www.polito.it/personale?p=marco.piras"
     },
     {
         name: "Prof. Vincenzo Di Pietra",
         role: "Tutor",
         image: "/assets/img/team-members/pietra.png",
+        profile: "https://www.polito.it/personale?p=vincenzo.dipietra"
     },
 ];
 
@@ -29,7 +32,7 @@ const teamMembers = [
 const OurTeam = () => {
     return (
         <div className="mt-6 text-gray-700">
-            {/* Supervisor */}
+            {/* Supervisor & Tutors */}
             <div className="flex flex-wrap justify-center items-center gap-10 mb-8">
                 {/* Supervisor */}
                 <div className="flex flex-col items-center text-center">
@@ -38,7 +41,10 @@ const OurTeam = () => {
                         alt={supervisor.name}
                         className="w-32 h-32 object-cover rounded-full shadow-md"
                     />
-                    <h3 className="mt-4 text-lg font-semibold">{supervisor.name}</h3>
+                    <a href={supervisor.profile} target="_blank" rel="noopener noreferrer"
+                       className="mt-4 text-lg font-semibold text-blue-600 hover:underline">
+                        {supervisor.name}
+                    </a>
                     <p className="text-gray-500 text-base">{supervisor.role}</p>
                 </div>
 
@@ -50,7 +56,10 @@ const OurTeam = () => {
                             alt={tutor.name}
                             className="w-32 h-32 object-cover rounded-full shadow-md"
                         />
-                        <h3 className="mt-4 text-lg font-semibold">{tutor.name}</h3>
+                        <a href={tutor.profile} target="_blank" rel="noopener noreferrer"
+                           className="mt-4 text-lg font-semibold text-blue-600 hover:underline">
+                            {tutor.name}
+                        </a>
                         <p className="text-gray-500 text-base">{tutor.role}</p>
                     </div>
                 ))}
