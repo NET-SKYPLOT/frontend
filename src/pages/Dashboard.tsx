@@ -20,7 +20,6 @@ const Dashboard = () => {
 
     return (
         <div className="flex h-screen w-screen bg-gray-50">
-            {/* Sidebar */}
             <Sidebar/>
 
             {/* Main Content */}

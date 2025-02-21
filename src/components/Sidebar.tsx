@@ -21,9 +21,11 @@ const Sidebar = () => {
 
             {/* Start Planning Button */}
             <div className="p-0">
-                <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-none">
-                    Start Planning
-                </button>
+                <Link to="/planning" className="block">
+                    <button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-none">
+                        Start Planning
+                    </button>
+                </Link>
             </div>
         </aside>
     );
