@@ -124,7 +124,6 @@ const Planning = () => {
                             selected={date}
                             onChange={(date) => setDate(date)}
                             className="border p-2 rounded w-full"
-                            popperClassName="datepicker-popper"
                         />
                     </div>
 
@@ -140,7 +139,6 @@ const Planning = () => {
                             timeCaption="Time"
                             dateFormat="HH:mm"
                             className="border p-2 rounded w-full"
-                            popperClassName="datepicker-popper"
                         />
                     </div>
 

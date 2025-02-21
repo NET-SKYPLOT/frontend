@@ -80,3 +80,7 @@ button:focus-visible {
 .datepicker-popper {
     z-index: 1000 !important;
 }
+
+.react-datepicker-wrapper {
+    width: 100% !important;
+}
