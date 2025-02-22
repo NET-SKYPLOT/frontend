@@ -23,10 +23,11 @@ const Sidebar = () => {
             {isMobile && (
                 <header
                     className="fixed top-0 left-0 w-full bg-white shadow-md flex items-center justify-between p-4 z-50">
-                    <div className="flex items-center gap-2">
+                    <Link to="/"
+                          className="p-4 flex items-center gap-2 text-xl font-bold text-gray-800 hover:text-gray-600">
                         <img src="/logo.png" alt="NET-SKYPLOT Logo" className="w-8 h-8 object-contain"/>
-                        <span className="text-xl font-bold text-gray-800">NET-SKYPLOT</span>
-                    </div>
+                        <span className={`${isOpen ? "block" : "hidden"} lg:block`}>NET-SKYPLOT</span>
+                    </Link>
                     <button onClick={() => setIsOpen(true)} className="text-gray-700 hover:text-gray-900">
                         <Menu size={30}/>
                     </button>
@@ -36,10 +37,11 @@ const Sidebar = () => {
             {!isMobile && (
                 <aside className="bg-white shadow-md h-screen w-64 fixed top-0 left-0">
                     {/* Sidebar Header */}
-                    <div className="p-4 flex items-center gap-2 text-xl font-bold text-gray-800">
+                    <Link to="/"
+                          className="p-4 flex items-center gap-2 text-xl font-bold text-gray-800 hover:text-gray-600">
                         <img src="/logo.png" alt="NET-SKYPLOT Logo" className="w-8 h-8 object-contain"/>
-                        <span>NET-SKYPLOT</span>
-                    </div>
+                        <span className={`${isOpen ? "block" : "hidden"} lg:block`}>NET-SKYPLOT</span>
+                    </Link>
 
                     {/* Navigation Links */}
                     <nav className="px-4 space-y-2">
