@@ -32,7 +32,6 @@ const teamMembers = [
 const OurTeam = () => {
     return (
         <section className="mt-6 px-4 md:px-8 text-gray-700">
-            {/* Supervisor & Tutors Section */}
             <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
                 {/* Supervisor */}
                 <div className="flex flex-col items-center text-center">
@@ -65,7 +64,7 @@ const OurTeam = () => {
                 ))}
             </div>
 
-            {/* Team Members Section */}
+            {/* Team Members */}
             <div>
                 <h3 className="text-2xl font-semibold text-center mb-6">Team Members</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-center">

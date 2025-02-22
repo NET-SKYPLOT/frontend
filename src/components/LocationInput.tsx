@@ -42,7 +42,7 @@ const LocationInput: React.FC<LocationInputProps> = ({coordinates, setCoordinate
             }
         } catch (error) {
             console.error("Error fetching address suggestions:", error);
-            setSuggestions([]); // Clear suggestions on error
+            setSuggestions([]);
         }
     };
 
@@ -51,7 +51,6 @@ const LocationInput: React.FC<LocationInputProps> = ({coordinates, setCoordinate
 
     return (
         <div className="mb-6">
-            {/* Address Input with Autocomplete */}
             <label className="block text-lg font-medium">Enter Address:</label>
             <Select
                 options={suggestions}

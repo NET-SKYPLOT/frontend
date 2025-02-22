@@ -4,7 +4,6 @@ import Sidebar from "../components/Sidebar";
 const Documentations = () => {
     const [showBackToTop, setShowBackToTop] = useState(false);
 
-    // Show "Back to Top" button when scrolling down
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > 300) {
@@ -20,12 +19,9 @@ const Documentations = () => {
 
     return (
         <div className="flex h-screen w-screen bg-gray-50">
-            {/* Sidebar (Fixed) */}
             <Sidebar/>
 
-            {/* Main Content */}
             <main className="flex-1 ml-64 p-6 bg-white shadow-md overflow-y-auto">
-                {/* Introduction */}
                 <section className="mb-8">
                     <h2 className="text-3xl font-semibold mb-4">📖 Welcome to the Documentation</h2>
                     <p className="leading-relaxed">
@@ -34,7 +30,6 @@ const Documentations = () => {
                     </p>
                 </section>
 
-                {/* Getting Started */}
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">🚀 Getting Started</h2>
                     <ol className="list-decimal pl-5 space-y-2">
@@ -44,7 +39,6 @@ const Documentations = () => {
                     </ol>
                 </section>
 
-                {/* Features */}
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">✨ Features Overview</h2>
                     <ul className="list-disc pl-5 space-y-2">
@@ -55,7 +49,6 @@ const Documentations = () => {
                     </ul>
                 </section>
 
-                {/* Troubleshooting */}
                 <section className="mb-8">
                     <h2 className="text-2xl font-semibold mb-4">🔧 Troubleshooting</h2>
                     <p>If you encounter issues, try the following steps:</p>
@@ -67,13 +60,11 @@ const Documentations = () => {
                     </ul>
                 </section>
 
-                {/* Contact Support */}
                 <section>
                     <h2 className="text-2xl font-semibold mb-4">📞 Need More Help?</h2>
                     <p>For further assistance, reach out to our support team.</p>
                 </section>
 
-                {/* Back to Top Button */}
                 {showBackToTop && (
                     <button
                         onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}

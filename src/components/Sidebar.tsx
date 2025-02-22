@@ -7,11 +7,10 @@ const Sidebar = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
     const [isOpen, setIsOpen] = useState(false); // Mobile menu is hidden by default
 
-    // Detect screen width changes
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth <= 1024);
-            if (window.innerWidth > 1024) setIsOpen(false); // Close mobile menu on large screens
+            if (window.innerWidth > 1024) setIsOpen(false);
         };
 
         window.addEventListener("resize", handleResize);
@@ -63,7 +62,6 @@ const Sidebar = () => {
                 </aside>
             )}
 
-            {/* 📌 Full-Screen Mobile Menu */}
             {isMobile && isOpen && (
                 <div className="fixed inset-0 bg-white z-50 flex flex-col">
                     {/* Mobile Menu Header */}
@@ -91,7 +89,6 @@ const Sidebar = () => {
                 </div>
             )}
 
-            {/* 📌 Overlay to Close Menu on Click */}
             {isMobile && isOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-50 z-40"

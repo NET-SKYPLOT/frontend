@@ -16,7 +16,7 @@ const ScrollToTop = () => {
 const App = () => {
     return (
         <Router>
-            <ScrollToTop/> {/* Ensures scrolling resets when changing pages */}
+            <ScrollToTop/>
             <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
                 <Routes>
                     <Route path="/" element={<Dashboard/>}/>

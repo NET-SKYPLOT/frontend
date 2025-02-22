@@ -4,7 +4,6 @@ import "./index.css";
 import App from "./App.tsx";
 import * as React from "react";
 
-// Custom Error Boundary Component (Using a Class-Based Approach)
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
     constructor(props: { children: React.ReactNode }) {
         super(props);
@@ -33,7 +32,6 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { has
     }
 }
 
-// Ensure `root` exists before rendering
 const rootElement = document.getElementById("root");
 if (!rootElement) {
     throw new Error("Root element not found");

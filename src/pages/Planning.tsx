@@ -29,7 +29,6 @@ const Planning = () => {
         );
     };
 
-    // Handle form submission
     const handleSubmit = async () => {
         setLoading(true);
 
@@ -45,7 +44,8 @@ const Planning = () => {
         console.log(data);
 
         try {
-            await axios.post("https://your-api-endpoint.com/planning", data);
+            await axios.post("#", data);
+            // await axios.post("https://netskyplot.com/planning", data);
             alert("Planning data submitted successfully!");
         } catch (error) {
             console.error("Error submitting data:", error);
@@ -57,14 +57,11 @@ const Planning = () => {
 
     return (
         <div className="flex h-screen w-screen bg-gray-50">
-            {/* Sidebar */}
             <Sidebar/>
 
-            {/* Main Content */}
             <main className="flex-1 ml-64 p-6 bg-white shadow-md overflow-y-auto">
                 <h1 className="text-3xl font-bold text-gray-800 mb-6">Planning Page</h1>
 
-                {/* Map Component */}
                 <MapComponent coordinates={coordinates} setCoordinates={setCoordinates} realignMap={realignMap}/>
 
                 {/* Use My Location Button */}
@@ -79,12 +76,9 @@ const Planning = () => {
                     </button>
                 </div>
 
-                {/* Location Input Component */}
                 <LocationInput coordinates={coordinates} setCoordinates={setCoordinates} setRealignMap={setRealignMap}/>
 
-                {/* Latitude & Longitude Input Fields */}
                 <div className="mb-4 flex flex-col sm:flex-row gap-4">
-                    {/* Latitude Input */}
                     <div className="w-full sm:w-1/2">
                         <label className="block text-lg font-medium">Latitude:</label>
                         <input
@@ -103,7 +97,6 @@ const Planning = () => {
                         />
                     </div>
 
-                    {/* Longitude Input */}
                     <div className="w-full sm:w-1/2">
                         <label className="block text-lg font-medium">Longitude:</label>
                         <input
@@ -123,9 +116,7 @@ const Planning = () => {
                     </div>
                 </div>
 
-                {/* Date, Time, Duration Section */}
                 <div className="mb-4 flex flex-col sm:flex-row gap-4">
-                    {/* Date Picker */}
                     <div className="w-full sm:w-1/3 relative">
                         <label className="block text-lg font-medium">Select Date:</label>
                         <DatePicker
@@ -136,7 +127,6 @@ const Planning = () => {
                         />
                     </div>
 
-                    {/* Time Picker */}
                     <div className="w-full sm:w-1/3 relative">
                         <label className="block text-lg font-medium">Select Time:</label>
                         <DatePicker
@@ -152,7 +142,6 @@ const Planning = () => {
                         />
                     </div>
 
-                    {/* Duration Input */}
                     <div className="w-full sm:w-1/3">
                         <label className="block text-lg font-medium">
                             Duration (minutes)
@@ -174,7 +163,6 @@ const Planning = () => {
                     </div>
                 </div>
 
-                {/* Timezone Select */}
                 <div className="mb-4">
                     <label className="block text-lg font-medium">Select Timezone:</label>
                     <TimezoneSelect
@@ -184,7 +172,6 @@ const Planning = () => {
                     />
                 </div>
 
-                {/* Submit Button */}
                 <button
                     onClick={handleSubmit}
                     className={`bg-blue-500 text-white px-6 py-2 rounded w-full mt-4 ${

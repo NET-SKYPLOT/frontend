@@ -18,7 +18,6 @@ const OpenSource = () => {
                 Join the community and be part of something innovative!
             </p>
 
-            {/* Call-To-Action Button for GitHub */}
             <div className="mt-6 text-center sm:text-left">
                 <a
                     href="https://github.com/your-repository"

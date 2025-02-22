@@ -3,12 +3,10 @@ import {useEffect, useCallback} from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Fix missing marker icon
 import markerIconPng from "leaflet/dist/images/marker-icon.png";
 import markerShadowPng from "leaflet/dist/images/marker-shadow.png";
 import * as React from "react";
 
-// Define marker icon manually
 const markerIcon = new L.Icon({
     iconUrl: markerIconPng,
     shadowUrl: markerShadowPng,
@@ -33,7 +31,7 @@ const MapComponent: React.FC<MapComponentProps> = ({coordinates, setCoordinates,
             <MapContainer
                 center={[coordinates.lat, coordinates.lon]}
                 zoom={13}
-                scrollWheelZoom={true} // Enable zooming on mobile
+                scrollWheelZoom={true}
                 className="w-full h-full rounded-md"
                 style={{height: "100%", width: "100%"}}
             >
@@ -46,7 +44,7 @@ const MapComponent: React.FC<MapComponentProps> = ({coordinates, setCoordinates,
     );
 };
 
-// Function to update the map center
+// Update the map center
 const RecenterMap = ({coordinates}: { coordinates: Coordinates }) => {
     const map = useMap();
 
@@ -59,7 +57,6 @@ const RecenterMap = ({coordinates}: { coordinates: Coordinates }) => {
     return null;
 };
 
-// Clickable Map Component: Updates marker position when user clicks on the map
 const ClickableMap: React.FC<{ setCoordinates: (coords: Coordinates) => void }> = ({setCoordinates}) => {
     const handleClick = useCallback((e: any) => {
         setCoordinates({lat: e.latlng.lat, lon: e.latlng.lng});
