@@ -31,15 +31,15 @@ const teamMembers = [
 
 const OurTeam = () => {
     return (
-        <div className="mt-6 text-gray-700">
-            {/* Supervisor & Tutors */}
-            <div className="flex flex-wrap justify-center items-center gap-10 mb-8">
+        <section className="mt-6 px-4 md:px-8 text-gray-700">
+            {/* Supervisor & Tutors Section */}
+            <div className="flex flex-wrap justify-center items-center gap-8 mb-8">
                 {/* Supervisor */}
                 <div className="flex flex-col items-center text-center">
                     <img
                         src={supervisor.image}
                         alt={supervisor.name}
-                        className="w-32 h-32 object-cover rounded-full shadow-md"
+                        className="w-28 h-28 sm:w-32 sm:h-32 object-cover rounded-full shadow-md"
                     />
                     <a href={supervisor.profile} target="_blank" rel="noopener noreferrer"
                        className="mt-4 text-lg font-semibold text-blue-600 hover:underline">
@@ -54,7 +54,7 @@ const OurTeam = () => {
                         <img
                             src={tutor.image}
                             alt={tutor.name}
-                            className="w-32 h-32 object-cover rounded-full shadow-md"
+                            className="w-28 h-28 sm:w-32 sm:h-32 object-cover rounded-full shadow-md"
                         />
                         <a href={tutor.profile} target="_blank" rel="noopener noreferrer"
                            className="mt-4 text-lg font-semibold text-blue-600 hover:underline">
@@ -65,23 +65,23 @@ const OurTeam = () => {
                 ))}
             </div>
 
-            {/* Team Members */}
+            {/* Team Members Section */}
             <div>
-                <h3 className="text-2xl font-semibold text-center mb-4">Team Members</h3>
-                <div className="grid grid-cols-3 gap-6 justify-center">
+                <h3 className="text-2xl font-semibold text-center mb-6">Team Members</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-center">
                     {teamMembers.map((member) => (
                         <div key={member.name} className="flex flex-col items-center text-center">
                             <img
                                 src={member.image}
                                 alt={member.name}
-                                className="w-36 h-36 object-cover rounded-full shadow-md"
+                                className="w-28 h-28 sm:w-32 sm:h-32 object-cover rounded-full shadow-md"
                             />
                             <h4 className="mt-3 text-lg font-medium">{member.name}</h4>
                         </div>
                     ))}
                 </div>
             </div>
-        </div>
+        </section>
     );
 };
 

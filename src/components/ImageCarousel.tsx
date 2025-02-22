@@ -1,5 +1,5 @@
-import {Navigation, Pagination, Autoplay} from 'swiper/modules';
-import {Swiper, SwiperSlide} from 'swiper/react';
+import {Navigation, Pagination, Autoplay} from "swiper/modules";
+import {Swiper, SwiperSlide} from "swiper/react";
 
 import "swiper/swiper-bundle.css";
 
@@ -14,7 +14,7 @@ const ImageCarousel = () => {
         <div className="w-full max-w-5xl mx-auto">
             <Swiper
                 modules={[Navigation, Pagination, Autoplay]}
-                spaceBetween={50}
+                spaceBetween={20}
                 slidesPerView={1}
                 navigation
                 pagination={{clickable: true}}
@@ -23,11 +23,12 @@ const ImageCarousel = () => {
                 className="rounded-lg shadow-lg"
             >
                 {images.map((src, index) => (
-                    <SwiperSlide key={index}>
+                    <SwiperSlide key={index} aria-hidden="true">
                         <img
                             src={src}
                             alt={`Slide ${index + 1}`}
-                            className="w-full h-[300px] object-cover rounded-lg"
+                            className="w-full h-[250px] sm:h-[300px] md:h-[350px] object-cover rounded-lg"
+                            loading="lazy"
                         />
                     </SwiperSlide>
                 ))}

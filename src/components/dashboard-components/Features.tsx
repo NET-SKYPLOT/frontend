@@ -1,8 +1,10 @@
 const Features = () => {
     return (
-        <div className="mt-6 text-gray-700">
-            <h2 className="text-3xl font-semibold mb-4">Platform Features</h2>
-            <ul className="list-disc pl-5 space-y-3">
+        <section className="mt-6 px-4 md:px-8 text-gray-700">
+            <h2 className="text-2xl sm:text-3xl font-semibold mb-6 text-center sm:text-left">
+                Platform Features
+            </h2>
+            <ul className="list-disc pl-5 space-y-4 text-lg sm:text-base">
                 <li>
                     <strong>Interactive Dashboard:</strong> Get real-time insights and analytics.
                 </li>
@@ -22,7 +24,7 @@ const Features = () => {
                     <strong>Responsive Design:</strong> Optimized for desktop and mobile devices.
                 </li>
             </ul>
-        </div>
+        </section>
     );
 };
 

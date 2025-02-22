@@ -1,5 +1,5 @@
 import {MapContainer, TileLayer, Marker, useMapEvents, useMap} from "react-leaflet";
-import {useEffect} from "react";
+import {useEffect, useCallback} from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -29,12 +29,13 @@ interface MapComponentProps {
 
 const MapComponent: React.FC<MapComponentProps> = ({coordinates, setCoordinates, realignMap}) => {
     return (
-        <div className="w-full h-[400px] mb-6">
+        <div className="w-full h-[300px] sm:h-[350px] md:h-[400px] mb-6">
             <MapContainer
                 center={[coordinates.lat, coordinates.lon]}
                 zoom={13}
+                scrollWheelZoom={true} // Enable zooming on mobile
                 className="w-full h-full rounded-md"
-                style={{height: "400px", width: "100%"}}
+                style={{height: "100%", width: "100%"}}
             >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
                 <ClickableMap setCoordinates={setCoordinates}/>
@@ -60,11 +61,14 @@ const RecenterMap = ({coordinates}: { coordinates: Coordinates }) => {
 
 // Clickable Map Component: Updates marker position when user clicks on the map
 const ClickableMap: React.FC<{ setCoordinates: (coords: Coordinates) => void }> = ({setCoordinates}) => {
+    const handleClick = useCallback((e: any) => {
+        setCoordinates({lat: e.latlng.lat, lon: e.latlng.lng});
+    }, [setCoordinates]);
+
     useMapEvents({
-        click(e) {
-            setCoordinates({lat: e.latlng.lat, lon: e.latlng.lng});
-        },
+        click: handleClick,
     });
+
     return null;
 };
 

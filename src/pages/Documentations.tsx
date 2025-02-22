@@ -1,17 +1,34 @@
+import {useState, useEffect} from "react";
 import Sidebar from "../components/Sidebar";
 
 const Documentations = () => {
+    const [showBackToTop, setShowBackToTop] = useState(false);
+
+    // Show "Back to Top" button when scrolling down
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 300) {
+                setShowBackToTop(true);
+            } else {
+                setShowBackToTop(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     return (
         <div className="flex h-screen w-screen bg-gray-50">
-            {/* Sidebar */}
+            {/* Sidebar (Fixed) */}
             <Sidebar/>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto p-8 text-gray-700">
+            <main className="flex-1 ml-64 p-6 bg-white shadow-md overflow-y-auto">
                 {/* Introduction */}
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-2">Welcome to the Documentation</h2>
-                    <p>
+                    <h2 className="text-3xl font-semibold mb-4">📖 Welcome to the Documentation</h2>
+                    <p className="leading-relaxed">
                         This web application provides a user-friendly experience. Below, you'll find instructions
                         on how to use its features.
                     </p>
@@ -19,7 +36,7 @@ const Documentations = () => {
 
                 {/* Getting Started */}
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-2">Getting Started</h2>
+                    <h2 className="text-2xl font-semibold mb-4">🚀 Getting Started</h2>
                     <ol className="list-decimal pl-5 space-y-2">
                         <li>Sign up or log in to your account.</li>
                         <li>Use the sidebar to navigate different sections.</li>
@@ -29,7 +46,7 @@ const Documentations = () => {
 
                 {/* Features */}
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-2">Features Overview</h2>
+                    <h2 className="text-2xl font-semibold mb-4">✨ Features Overview</h2>
                     <ul className="list-disc pl-5 space-y-2">
                         <li><strong>Dashboard:</strong> A central hub for insights.</li>
                         <li><strong>Image Carousel:</strong> Browse dynamic content.</li>
@@ -40,7 +57,7 @@ const Documentations = () => {
 
                 {/* Troubleshooting */}
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold mb-2">Troubleshooting</h2>
+                    <h2 className="text-2xl font-semibold mb-4">🔧 Troubleshooting</h2>
                     <p>If you encounter issues, try the following steps:</p>
                     <ul className="list-disc pl-5 space-y-2">
                         <li>Refresh the page.</li>
@@ -52,9 +69,19 @@ const Documentations = () => {
 
                 {/* Contact Support */}
                 <section>
-                    <h2 className="text-2xl font-semibold mb-2">Need More Help?</h2>
+                    <h2 className="text-2xl font-semibold mb-4">📞 Need More Help?</h2>
                     <p>For further assistance, reach out to our support team.</p>
                 </section>
+
+                {/* Back to Top Button */}
+                {showBackToTop && (
+                    <button
+                        onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}
+                        className="fixed bottom-6 right-6 bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition"
+                    >
+                        ↑ Back to Top
+                    </button>
+                )}
             </main>
         </div>
     );
