@@ -46,7 +46,6 @@ const LocationInput: React.FC<LocationInputProps> = ({coordinates, setCoordinate
         }
     };
 
-    // Debounce function to limit API calls
     const debouncedFetchAddressSuggestions = useCallback(debounce(fetchAddressSuggestions, 500), []);
 
     return (
@@ -55,12 +54,14 @@ const LocationInput: React.FC<LocationInputProps> = ({coordinates, setCoordinate
             <Select
                 options={suggestions}
                 onInputChange={(value, {action}) => {
-                    if (action === "input-change") {
+                    if (action === "input-change" && value.trim() !== "") {
                         debouncedFetchAddressSuggestions(value);
+                    } else if (action === "input-blur" || value.trim() === "") {
+                        setSuggestions([]);
                     }
                 }}
                 onChange={(option) => {
-                    if (option) {
+                    if (option && option.value) {
                         setCoordinates(option.value);
                         setRealignMap(true);
                         setTimeout(() => setRealignMap(false), 500);
