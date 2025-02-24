@@ -60,6 +60,42 @@ const StepLocation = ({formData, setFormData, nextStep, prevStep, stepIndex}: St
 
             <LocationInput coordinates={coordinates} setCoordinates={setCoordinates} setRealignMap={setRealignMap}/>
 
+            <div className="mb-4 flex flex-col sm:flex-row gap-4">
+                <div className="w-full sm:w-1/2">
+                    <label className="block text-lg font-medium">Latitude:</label>
+                    <input
+                        type="number"
+                        value={coordinates.lat}
+                        onChange={(e) => {
+                            const lat = parseFloat(e.target.value);
+                            if (!isNaN(lat)) {
+                                setCoordinates({...coordinates, lat});
+                                setRealignMap(true);  // 🔹 Trigger map recentering
+                                setTimeout(() => setRealignMap(false), 500);
+                            }
+                        }}
+                        className="border p-2 rounded w-full"
+                    />
+                </div>
+
+                <div className="w-full sm:w-1/2">
+                    <label className="block text-lg font-medium">Longitude:</label>
+                    <input
+                        type="number"
+                        value={coordinates.lon}
+                        onChange={(e) => {
+                            const lon = parseFloat(e.target.value);
+                            if (!isNaN(lon)) {
+                                setCoordinates({...coordinates, lon});
+                                setRealignMap(true);  // 🔹 Trigger map recentering
+                                setTimeout(() => setRealignMap(false), 500);
+                            }
+                        }}
+                        className="border p-2 rounded w-full"
+                    />
+                </div>
+            </div>
+
             <div className="flex justify-between mt-4">
                 <button onClick={prevStep} className="bg-gray-400 text-white px-4 py-2 rounded">
                     Back
