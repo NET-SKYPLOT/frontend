@@ -8,3 +8,6 @@ services:
       - "80:80"
       - "443:443"
     restart: always
+    volumes:
+      - /etc/letsencrypt/live/netskyplot.com/fullchain.pem:/etc/ssl/certs/netskyplot.crt
+      - /etc/letsencrypt/live/netskyplot.com/privkey.pem:/etc/ssl/private/netskyplot.key
