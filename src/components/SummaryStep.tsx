@@ -1,14 +1,4 @@
 import * as React from "react";
-import {MapContainer, TileLayer, Marker} from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-const markerIcon = new L.Icon({
-    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-});
 
 interface SummaryStepProps {
     formData: any;
@@ -18,37 +8,81 @@ interface SummaryStepProps {
 
 const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep, handleSubmit}) => {
     return (
-        <div className="space-y-6 p-6 bg-white shadow-md rounded-md">
+        <div className="space-y-6">
             <h2 className="text-2xl font-semibold">Final Step: Review & Submit</h2>
 
-            <p><strong>Date:</strong> {formData.date?.toLocaleDateString()}</p>
-            <p><strong>Time:</strong> {formData.time?.toLocaleTimeString()}</p>
-            <p><strong>Duration:</strong> {formData.duration} minutes</p>
-            <p><strong>Timezone:</strong> {formData.timezone?.label || "UTC"}</p>
-
-            <h3 className="text-xl font-semibold mt-4">Selected Locations</h3>
-
-            {formData.locations.map((loc: any, index: number) => (
-                <p key={index} className="text-gray-700">
-                    📍 <strong>Location {index + 1}:</strong> Lat {loc.lat}, Lon {loc.lon}
+            {/* Application Type */}
+            <div className="p-4 border rounded-md bg-gray-100">
+                <p>
+                    <strong>Application Type:</strong>{" "}
+                    {formData.receivers.length > 1 ? "Multiple Receivers" : "Single Receiver"}
                 </p>
-            ))}
+            </div>
 
-            {formData.locations.length > 0 && (
-                <div className="w-full h-64 mt-6">
-                    <MapContainer
-                        center={[formData.locations[0].lat, formData.locations[0].lon]}
-                        zoom={2}
-                        className="w-full h-full rounded-md"
-                    >
-                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                        {formData.locations.map((loc: any, index: number) => (
-                            <Marker key={index} position={[loc.lat, loc.lon]} icon={markerIcon}/>
+            {/* General Planning Information */}
+            <div className="p-4 border rounded-md bg-gray-50">
+                <p><strong>Date:</strong> {formData.date?.toLocaleDateString()}</p>
+                <p><strong>Time:</strong> {formData.time?.toLocaleTimeString()}</p>
+                <p><strong>Duration:</strong> {formData.duration} minutes</p>
+                <p><strong>Timezone:</strong> {formData.timezone?.label}</p>
+            </div>
+
+            {/* Selected GNSS Constellations */}
+            <div className="p-4 border rounded-md bg-gray-50">
+                <h3 className="text-xl font-semibold">Selected GNSS Constellations</h3>
+                {formData.constellations.length > 0 ? (
+                    <ul className="list-disc ml-6">
+                        {formData.constellations.map((constellation: string) => (
+                            <li key={constellation}>{constellation}</li>
                         ))}
-                    </MapContainer>
-                </div>
-            )}
+                    </ul>
+                ) : (
+                    <p className="text-gray-500">No constellations selected.</p>
+                )}
+            </div>
 
+            {/* Receivers List */}
+            <div className="p-4 border rounded-md bg-gray-50">
+                <h3 className="text-xl font-semibold">Receivers</h3>
+                {formData.receivers.map((receiver: any, rIndex: number) => (
+                    <div key={receiver.id} className="p-4 border-b last:border-none">
+                        <h4 className="text-lg font-semibold mb-2">Receiver {rIndex + 1}</h4>
+                        <p><strong>ID:</strong> {receiver.id}</p>
+                        <p><strong>Role:</strong> {receiver.role.toUpperCase()}</p>
+                        <p><strong>Location:</strong> Lat {receiver.lat}, Lon {receiver.lon}</p>
+                        <p><strong>Height from Ground:</strong> {receiver.height} meters</p>
+
+                        {/* Obstacles Section */}
+                        {receiver.obstacles && receiver.obstacles.length > 0 && (
+                            <div className="mt-3 p-3 border rounded-md bg-gray-100">
+                                <h4 className="text-lg font-semibold">Obstacles</h4>
+                                {receiver.obstacles.map((obstacle: any, index: number) => (
+                                    <div key={obstacle.id} className="p-2 border-b last:border-none">
+                                        <h5 className="text-md font-semibold">Obstacle {index + 1}</h5>
+                                        <p><strong>ID:</strong> {obstacle.id}</p>
+                                        <p><strong>Obstacle Height:</strong> {obstacle.totalHeight} meters</p>
+                                        <p><strong>Height from Ground:</strong> {obstacle.groundHeight} meters</p>
+
+                                        {/* Obstacle Vertices */}
+                                        <div className="mt-2">
+                                            <p><strong>Vertices:</strong></p>
+                                            <ul className="ml-4 list-disc text-gray-700">
+                                                {obstacle.coordinates.map((vertex: [number, number], vIndex: number) => (
+                                                    <li key={vIndex}>
+                                                        Lat: {vertex[0]}, Lon: {vertex[1]}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+
+            {/* Navigation Buttons */}
             <div className="flex justify-between mt-4">
                 <button onClick={prevStep} className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">
                     Back

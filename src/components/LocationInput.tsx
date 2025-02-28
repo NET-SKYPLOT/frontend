@@ -18,7 +18,6 @@ interface LocationInputProps {
 const LocationInput: React.FC<LocationInputProps> = ({coordinates, setCoordinates, setRealignMap}) => {
     const [suggestions, setSuggestions] = useState<{ label: string; value: Coordinates }[]>([]);
 
-    // Fetch address suggestions using OpenStreetMap
     const fetchAddressSuggestions = async (input: string) => {
         if (!input.trim()) {
             setSuggestions([]);

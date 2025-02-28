@@ -35,21 +35,18 @@ const Sidebar = () => {
 
             {!isMobile && (
                 <aside className="bg-white shadow-md h-screen w-64 fixed top-0 left-0">
-                    {/* Sidebar Header */}
                     <Link to="/"
                           className="p-4 flex items-center gap-2 text-xl font-bold text-gray-800 hover:text-gray-600">
                         <img src="/logo.png" alt="NET-SKYPLOT Logo" className="w-8 h-8 object-contain"/>
                         <span className={`${isOpen ? "block" : "hidden"} lg:block`}>NET-SKYPLOT</span>
                     </Link>
 
-                    {/* Navigation Links */}
                     <nav className="px-4 space-y-2">
                         <NavItem icon={<Home size={20}/>} label="Home" link="/" active={location.pathname === "/"}/>
                         <NavItem icon={<Book size={20}/>} label="Documentations" link="/documentations"
                                  active={location.pathname === "/documentations"}/>
                     </nav>
 
-                    {/* Start Planning Button */}
                     <div className="p-6 absolute bottom-0 w-full">
                         <Link to="/planning" className="block">
                             <button
@@ -64,7 +61,6 @@ const Sidebar = () => {
 
             {isMobile && isOpen && (
                 <div className="fixed inset-0 bg-white z-50 flex flex-col">
-                    {/* Mobile Menu Header */}
                     <div className="p-4 flex items-center justify-between text-xl font-bold text-gray-800 border-b">
                         <span>Menu</span>
                         <button onClick={() => setIsOpen(false)} className="text-gray-700 hover:text-gray-900">
@@ -72,7 +68,6 @@ const Sidebar = () => {
                         </button>
                     </div>
 
-                    {/* Mobile Navigation */}
                     <nav className="flex-1 flex flex-col justify-center items-center space-y-6 text-lg">
                         <NavItem icon={<Home size={24}/>} label="Home" link="/" active={location.pathname === "/"}
                                  setIsOpen={setIsOpen} isMobile/>

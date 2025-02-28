@@ -14,7 +14,6 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
         <div className="space-y-6">
             <h2 className="text-2xl font-semibold">Step 1: Select Planning Details</h2>
 
-            {/* Date Input */}
             <div>
                 <label className="block text-lg font-medium">Select Date:</label>
                 <DatePicker
@@ -24,7 +23,6 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                 />
             </div>
 
-            {/* Time Input */}
             <div>
                 <label className="block text-lg font-medium">Select Time:</label>
                 <DatePicker
@@ -32,33 +30,35 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                     onChange={(time) => setFormData({...formData, time})}
                     showTimeSelect
                     showTimeSelectOnly
-                    timeIntervals={15}
+                    timeIntervals={60}
                     timeCaption="Time"
                     dateFormat="HH:mm"
                     className="border p-2 rounded w-full"
                 />
             </div>
 
-            {/* Duration Input */}
             <div>
                 <label className="block text-lg font-medium">
-                    Duration (minutes) <span
-                    className="text-gray-500">({(Number(formData.duration) / 60).toFixed(2)} hrs)</span>
+                    Duration (minutes){" "}
+                    <span className="text-gray-500">
+                        ({(Number(formData.duration) / 60).toFixed(2)} hrs)
+                    </span>
                 </label>
                 <input
                     type="number"
                     value={formData.duration}
-                    onChange={(e) => setFormData({
-                        ...formData,
-                        duration: Math.max(15, Math.ceil(Number(e.target.value) / 15) * 15)
-                    })}
+                    onChange={(e) =>
+                        setFormData({
+                            ...formData,
+                            duration: Math.max(60, Math.ceil(Number(e.target.value) / 60) * 60),
+                        })
+                    }
                     className="border p-2 rounded w-full"
-                    min="15"
-                    step="15"
+                    min="60"
+                    step="60"
                 />
             </div>
 
-            {/* Timezone Select */}
             <div>
                 <label className="block text-lg font-medium">Select Timezone:</label>
                 <TimezoneSelect
@@ -71,8 +71,10 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                 />
             </div>
 
-            <button onClick={nextStep}
-                    className="bg-blue-500 text-white px-6 py-2 rounded w-full mt-4 hover:bg-blue-600">
+            <button
+                onClick={nextStep}
+                className="bg-blue-500 text-white px-6 py-2 rounded w-full mt-4 hover:bg-blue-600"
+            >
                 Next
             </button>
         </div>
