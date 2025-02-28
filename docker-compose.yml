@@ -1,5 +1,8 @@
 services:
   frontend:
+    platform: linux/amd64
+    image: netskyplot_frontend
+    container_name: netskyplot_frontend
     build: .
     ports:
       - "5173:80"
