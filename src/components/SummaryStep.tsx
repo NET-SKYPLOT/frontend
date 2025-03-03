@@ -16,10 +16,9 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         setLoading(true);
         setError(null);
 
-        // ✅ Convert form data to API format
         const requestData = {
-            start_datetime: new Date(formData.date).toISOString(), // Convert date to ISO format
-            duration_hours: Number(formData.duration) / 60, // Convert minutes to hours
+            start_datetime: new Date(formData.date).toISOString(),
+            duration_hours: Number(formData.duration) / 60,
             dem: {
                 type: formData.selectedDEM || "",
                 source: "ot", // Assuming "ot" as the default source
@@ -45,10 +44,8 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         };
 
         try {
-            // ✅ Send request to /api/v1/plan
             const response = await axios.post("http://127.0.0.1:8760/api/v1/plan", requestData);
 
-            // ✅ Navigate to ResultPage with request/response data
             navigate("/result", {state: {requestData, responseData: response.data}});
         } catch (err) {
             console.error("Error submitting planning request:", err);
@@ -146,8 +143,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
 
             {/* Navigation Buttons */}
             <div className="flex justify-between mt-4">
-                <button onClick={prevStep}
-                        className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 w-1/4 mx-1">
+                <button onClick={prevStep} className="bg-gray-400 text-white px-6 py-2 rounded w-1/4 mx-1">
                     Back
                 </button>
                 <button
