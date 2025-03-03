@@ -1,8 +1,8 @@
 services:
-  frontend:
+  netskyplot-frontend:
     platform: linux/amd64
-    image: netskyplot_frontend
-    container_name: netskyplot_frontend
+    build:
+      context: .
     ports:
       - "80:80"
       - "443:443"
