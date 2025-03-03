@@ -3,11 +3,10 @@ services:
     platform: linux/amd64
     image: netskyplot_frontend
     container_name: netskyplot_frontend
-    build: .
     ports:
       - "80:80"
       - "443:443"
     restart: always
     volumes:
-      - /etc/letsencrypt/live/netskyplot.com/fullchain.pem:/etc/ssl/certs/netskyplot.crt
-      - /etc/letsencrypt/live/netskyplot.com/privkey.pem:/etc/ssl/private/netskyplot.key
+      - "${SSL_CERT_PATH:-/etc/letsencrypt/live/netskyplot.com/fullchain.pem}:/etc/ssl/certs/netskyplot.crt"
+      - "${SSL_KEY_PATH:-/etc/letsencrypt/live/netskyplot.com/privkey.pem}:/etc/ssl/private/netskyplot.key"

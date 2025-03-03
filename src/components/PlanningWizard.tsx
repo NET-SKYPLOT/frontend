@@ -1,11 +1,10 @@
 import {useState, useRef} from "react";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
-import StepThree from "./StepThree"; // GNSS selection step
-import StepDEMSelection from "./StepDEMSelection"; // New step for DEM selection
+import StepThree from "./StepThree";
+import StepDEMSelection from "./StepDEMSelection";
 import SummaryStep from "./SummaryStep";
 import ReceiverSetupModal from "./ReceiverSetupModal";
-import axios from "axios";
 import {CSSTransition, TransitionGroup} from "react-transition-group";
 import {generateUniqueId} from "../utils/idGenerator";
 import "../assets/PlanningWizard.css";
@@ -34,8 +33,8 @@ const PlanningWizard = () => {
                 height: 0,
             } as Receiver,
         ],
-        constellations: [], // ✅ GNSS constellation selection
-        selectedDEM: null,  // ✅ New field for DEM selection
+        constellations: [],
+        selectedDEM: null,
     });
 
     const [selectedReceiver, setSelectedReceiver] = useState<Receiver | null>(null);
@@ -58,23 +57,10 @@ const PlanningWizard = () => {
                     height: 0,
                 } as Receiver,
             ],
-            constellations: [], // ✅ Reset GNSS selections
-            selectedDEM: null,  // ✅ Reset DEM selection
+            constellations: [],
+            selectedDEM: null,
         });
         setStep(1);
-    };
-
-    const handleSubmit = async () => {
-        console.log("Submitting data:", formData);
-
-        try {
-            await axios.post("#", formData);
-            alert("Planning data submitted successfully!");
-            startOver();
-        } catch (error) {
-            console.error("Error submitting data:", error);
-            alert("An error occurred while submitting your data.");
-        }
     };
 
     const nodeRef = useRef(null);
@@ -92,8 +78,7 @@ const PlanningWizard = () => {
                         {step === 4 &&
                             <StepDEMSelection formData={formData} setFormData={setFormData} nextStep={nextStep}
                                               prevStep={prevStep}/>}
-                        {step === 5 &&
-                            <SummaryStep formData={formData} prevStep={prevStep} handleSubmit={handleSubmit}/>}
+                        {step === 5 && <SummaryStep formData={formData} prevStep={prevStep}/>}
                     </div>
                 </CSSTransition>
             </TransitionGroup>
