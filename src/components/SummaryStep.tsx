@@ -1,22 +1,71 @@
-import * as React from "react";
+import React, {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 interface SummaryStepProps {
     formData: any;
     prevStep: () => void;
-    handleSubmit: () => void;
 }
 
-const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep, handleSubmit}) => {
+const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = async () => {
+        setLoading(true);
+        setError(null);
+
+        // ✅ Convert form data to API format
+        const requestData = {
+            start_datetime: new Date(formData.date).toISOString(), // Convert date to ISO format
+            duration_hours: Number(formData.duration) / 60, // Convert minutes to hours
+            dem: {
+                type: formData.selectedDEM || "",
+                source: "ot", // Assuming "ot" as the default source
+            },
+            constellations: formData.constellations || [],
+            receivers: formData.receivers.map((receiver: any) => ({
+                id: receiver.id,
+                role: receiver.role,
+                coordinates: {
+                    latitude: receiver.lat,
+                    longitude: receiver.lon,
+                    height: receiver.height || 0,
+                },
+                obstacles: receiver.obstacles?.map((obstacle: any) => ({
+                    vertices: obstacle.coordinates.map((vertex: [number, number]) => ({
+                        latitude: vertex[0],
+                        longitude: vertex[1],
+                    })),
+                    height: obstacle.totalHeight,
+                })) || [],
+            })),
+            application: formData.receivers.length > 1 ? "differential_gnss" : "single",
+        };
+
+        try {
+            // ✅ Send request to /api/v1/plan
+            const response = await axios.post("http://127.0.0.1:8760/api/v1/plan", requestData);
+
+            // ✅ Navigate to ResultPage with request/response data
+            navigate("/result", {state: {requestData, responseData: response.data}});
+        } catch (err) {
+            console.error("Error submitting planning request:", err);
+            setError("Failed to submit request. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-semibold">Final Step: Review & Submit</h2>
 
             {/* Application Type */}
             <div className="p-4 border rounded-md bg-gray-100">
-                <p>
-                    <strong>Application Type:</strong>{" "}
-                    {formData.receivers.length > 1 ? "Multiple Receivers" : "Single Receiver"}
-                </p>
+                <p><strong>Application
+                    Type:</strong> {formData.receivers.length > 1 ? "Multiple Receivers" : "Single Receiver"}</p>
             </div>
 
             {/* General Planning Information */}
@@ -82,13 +131,33 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep, handleSubm
                 ))}
             </div>
 
+            {/* Selected DEM Section */}
+            {formData.selectedDEM ? (
+                <div className="p-4 border rounded-md bg-gray-50">
+                    <h3 className="text-xl font-semibold">Selected Digital Elevation Model (DEM)</h3>
+                    <p><strong>DEM Name:</strong> {formData.selectedDEM}</p>
+                </div>
+            ) : (
+                <p className="text-gray-500">No DEM selected.</p>
+            )}
+
+            {/* Error Message */}
+            {error && <p className="text-red-500">{error}</p>}
+
             {/* Navigation Buttons */}
             <div className="flex justify-between mt-4">
-                <button onClick={prevStep} className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500">
+                <button onClick={prevStep}
+                        className="bg-gray-400 text-white px-6 py-2 rounded hover:bg-gray-500 w-1/4 mx-1">
                     Back
                 </button>
-                <button onClick={handleSubmit} className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
-                    Submit
+                <button
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className={`px-6 py-2 rounded w-3/4 mx-1 ${
+                        loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600 text-white"
+                    }`}
+                >
+                    {loading ? "Submitting..." : "Submit"}
                 </button>
             </div>
         </div>

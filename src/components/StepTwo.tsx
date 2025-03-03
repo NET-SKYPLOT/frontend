@@ -115,10 +115,10 @@ const StepTwo: React.FC<StepTwoProps> = ({formData, setFormData, nextStep, prevS
             )}
 
             <div className="flex justify-between mt-4">
-                <button onClick={prevStep} className="bg-gray-400 text-white px-6 py-2 rounded">
+                <button onClick={prevStep} className="bg-gray-400 text-white px-6 py-2 rounded w-1/4 mx-1">
                     Back
                 </button>
-                <button onClick={nextStep} className="bg-blue-500 text-white px-6 py-2 rounded">
+                <button onClick={nextStep} className="bg-blue-500 text-white px-6 py-2 rounded w-3/4 mx-1">
                     Next
                 </button>
             </div>

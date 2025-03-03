@@ -1,7 +1,8 @@
 import {useState, useRef} from "react";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
-import StepThree from "./StepThree"; // New Step for GNSS selection
+import StepThree from "./StepThree"; // GNSS selection step
+import StepDEMSelection from "./StepDEMSelection"; // New step for DEM selection
 import SummaryStep from "./SummaryStep";
 import ReceiverSetupModal from "./ReceiverSetupModal";
 import axios from "axios";
@@ -33,7 +34,8 @@ const PlanningWizard = () => {
                 height: 0,
             } as Receiver,
         ],
-        constellations: [], // ✅ Added GNSS constellation selection
+        constellations: [], // ✅ GNSS constellation selection
+        selectedDEM: null,  // ✅ New field for DEM selection
     });
 
     const [selectedReceiver, setSelectedReceiver] = useState<Receiver | null>(null);
@@ -57,6 +59,7 @@ const PlanningWizard = () => {
                 } as Receiver,
             ],
             constellations: [], // ✅ Reset GNSS selections
+            selectedDEM: null,  // ✅ Reset DEM selection
         });
         setStep(1);
     };
@@ -87,6 +90,9 @@ const PlanningWizard = () => {
                         {step === 3 && <StepThree formData={formData} setFormData={setFormData} nextStep={nextStep}
                                                   prevStep={prevStep}/>}
                         {step === 4 &&
+                            <StepDEMSelection formData={formData} setFormData={setFormData} nextStep={nextStep}
+                                              prevStep={prevStep}/>}
+                        {step === 5 &&
                             <SummaryStep formData={formData} prevStep={prevStep} handleSubmit={handleSubmit}/>}
                     </div>
                 </CSSTransition>

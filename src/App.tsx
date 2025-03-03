@@ -4,6 +4,7 @@ import {lazy, Suspense, useEffect} from "react";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Documentations = lazy(() => import("./pages/Documentations"));
 const Planning = lazy(() => import("./pages/Planning"));
+const ResultPage = lazy(() => import("./pages/ResultPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const ScrollToTop = () => {
@@ -22,6 +23,7 @@ const App = () => {
                     <Route path="/" element={<Dashboard/>}/>
                     <Route path="/documentations" element={<Documentations/>}/>
                     <Route path="/planning" element={<Planning/>}/>
+                    <Route path="/result" element={<ResultPage/>}/>
                     <Route path="*" element={<NotFound/>}/>
                 </Routes>
             </Suspense>
