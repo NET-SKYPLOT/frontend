@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const fetchAvailableDems = async (receivers: any[]) => {
     try {
-        const response = await axios.post("http://167.172.173.179:8760/api/v1/dems", {
+        const response = await axios.post("http://api_gateway:8760/api/v1/dems", {
             receivers: receivers.map(receiver => ({
                 coordinates: {
                     latitude: receiver.lat,
@@ -31,7 +31,7 @@ export const fetchAvailableDems = async (receivers: any[]) => {
                 type: dem.type,
                 resolution: dem.resolution,
             })),
-            recommendedDEM, // ✅ Includes recommended DEM in response
+            recommendedDEM,
         };
     } catch (error) {
         console.error("Error fetching DEMs:", error);

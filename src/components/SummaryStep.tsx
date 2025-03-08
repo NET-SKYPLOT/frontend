@@ -44,7 +44,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         };
 
         try {
-            const response = await axios.post("http://167.172.173.179:8760/api/v1/plan", requestData);
+            const response = await axios.post("http://api_gateway:8760/api/v1/plan", requestData);
 
             navigate("/result", {state: {requestData, responseData: response.data}});
         } catch (err) {
