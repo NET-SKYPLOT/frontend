@@ -25,7 +25,8 @@ export const fetchAvailableDems = async (receivers: any[]) => {
             }
             : null;
 
-        return {
+        // ✅ Log the final result before returning
+        const finalResult = {
             availableDems: availableDems.map((dem: any) => ({
                 description: dem.description,
                 type: dem.type,
@@ -33,8 +34,12 @@ export const fetchAvailableDems = async (receivers: any[]) => {
             })),
             recommendedDEM,
         };
+
+        console.log("Final Result Passed to Next Component:", finalResult);
+
+        return finalResult;
     } catch (error) {
         console.error("Error fetching DEMs:", error);
-        return {availableDems: [], recommendedDEM: null};
+        return { availableDems: [], recommendedDEM: null };
     }
 };
