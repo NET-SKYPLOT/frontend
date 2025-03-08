@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const fetchAvailableDems = async (receivers: any[]) => {
     try {
-        const response = await axios.post("http://api_gateway:8760/api/v1/dems", {
+        const response = await axios.post("https://api_gateway:8760/api/v1/dems", {
             receivers: receivers.map(receiver => ({
                 coordinates: {
                     latitude: receiver.lat,
