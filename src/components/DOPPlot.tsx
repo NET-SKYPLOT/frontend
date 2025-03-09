@@ -4,27 +4,29 @@ import {Chart, registerables} from "chart.js";
 
 Chart.register(...registerables);
 
-interface DOPPlotProps {
-    responseData: any;
+interface DOPData {
+    time: string[];
+    gdop: number[];
+    pdop: number[];
+    hdop: number[];
+    vdop: number[];
 }
 
-const DOPPlot: React.FC<DOPPlotProps> = ({responseData}) => {
-    if (!responseData || !responseData.receivers || responseData.receivers.length === 0) {
+interface DOPPlotProps {
+    data: DOPData;
+}
+
+const DOPPlot: React.FC<DOPPlotProps> = ({data}) => {
+    if (!data || !data.time.length) {
         return <p className="text-red-500">No DOP data available.</p>;
     }
 
-    const dopData = responseData.receivers[0]?.dop;
-    if (!dopData) {
-        return <p className="text-red-500">No DOP values found.</p>;
-    }
-
-    // Extract the time and DOP values
     const chartData = {
-        labels: dopData.time.map((t: string) => new Date(t).toLocaleTimeString()), // Convert to readable format
+        labels: data.time.map((t) => new Date(t).toLocaleTimeString()), // Convert to readable format
         datasets: [
             {
                 label: "GDOP",
-                data: dopData.gdop,
+                data: data.gdop,
                 borderColor: "rgba(255, 0, 0, 0.8)",
                 backgroundColor: "rgba(255, 0, 0, 0.2)",
                 borderWidth: 2,
@@ -33,7 +35,7 @@ const DOPPlot: React.FC<DOPPlotProps> = ({responseData}) => {
             },
             {
                 label: "PDOP",
-                data: dopData.pdop,
+                data: data.pdop,
                 borderColor: "rgba(0, 0, 255, 0.8)",
                 backgroundColor: "rgba(0, 0, 255, 0.2)",
                 borderWidth: 2,
@@ -42,7 +44,7 @@ const DOPPlot: React.FC<DOPPlotProps> = ({responseData}) => {
             },
             {
                 label: "HDOP",
-                data: dopData.hdop,
+                data: data.hdop,
                 borderColor: "rgba(0, 128, 0, 0.8)",
                 backgroundColor: "rgba(0, 128, 0, 0.2)",
                 borderWidth: 2,
@@ -51,7 +53,7 @@ const DOPPlot: React.FC<DOPPlotProps> = ({responseData}) => {
             },
             {
                 label: "VDOP",
-                data: dopData.vdop,
+                data: data.vdop,
                 borderColor: "rgba(128, 0, 128, 0.8)",
                 backgroundColor: "rgba(128, 0, 128, 0.2)",
                 borderWidth: 2,
@@ -70,9 +72,7 @@ const DOPPlot: React.FC<DOPPlotProps> = ({responseData}) => {
                 labels: {
                     boxWidth: 15,
                     padding: 10,
-                    font: {
-                        size: 12,
-                    },
+                    font: {size: 12},
                 },
             },
             tooltip: {

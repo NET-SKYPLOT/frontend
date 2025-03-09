@@ -4,23 +4,27 @@ import {Chart, registerables} from "chart.js";
 
 Chart.register(...registerables);
 
-interface SatelliteVisibilityProps {
-    responseData: any;
+interface VisibilityEntry {
+    time: string;
+    count: number;
 }
 
-const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({responseData}) => {
-    if (!responseData || !responseData.receivers || responseData.receivers.length === 0) {
+interface VisibilityData {
+    [constellation: string]: VisibilityEntry[];
+}
+
+interface SatelliteVisibilityProps {
+    data: VisibilityData;
+}
+
+const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({data}) => {
+    if (!data || Object.keys(data).length === 0) {
         return <p className="text-red-500">No satellite visibility data available.</p>;
     }
 
-    const visibilityData = responseData.receivers[0]?.visibility;
-    if (!visibilityData) {
-        return <p className="text-red-500">No visibility values found.</p>;
-    }
-
     // Extract time labels (assume first constellation defines the timestamps)
-    const firstConstellation = Object.keys(visibilityData)[0];
-    const timeLabels = visibilityData[firstConstellation].map((entry: any) => entry.time);
+    const firstConstellation = Object.keys(data)[0];
+    const timeLabels = data[firstConstellation]?.map((entry) => entry.time) || [];
 
     // Map colors for different constellations
     const colorMap: Record<string, string> = {
@@ -32,10 +36,10 @@ const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({responseData})
 
     // Format data for Chart.js
     const chartData = {
-        labels: timeLabels.map((t: string) => new Date(t).toLocaleTimeString()), // Convert to readable time
-        datasets: Object.keys(visibilityData).map((constellation) => ({
+        labels: timeLabels.map((t) => new Date(t).toLocaleTimeString()), // Convert to readable time
+        datasets: Object.keys(data).map((constellation) => ({
             label: constellation,
-            data: visibilityData[constellation].map((entry: any) => entry.count),
+            data: data[constellation].map((entry) => entry.count),
             backgroundColor: colorMap[constellation] || "gray",
             borderColor: colorMap[constellation] || "gray",
             borderWidth: 1,
@@ -51,9 +55,7 @@ const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({responseData})
                 labels: {
                     boxWidth: 15,
                     padding: 10,
-                    font: {
-                        size: 12,
-                    },
+                    font: {size: 12},
                 },
             },
             tooltip: {
