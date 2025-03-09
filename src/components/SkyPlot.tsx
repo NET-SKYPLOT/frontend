@@ -1,6 +1,8 @@
 import React, {useState} from "react";
-import Plot from "react-plotly.js";
-import {ScatterData} from "plotly.js";  // ✅ Correct type
+import {Scatter} from "react-chartjs-2";
+import {Chart, registerables} from "chart.js";
+
+Chart.register(...registerables);
 
 interface SatelliteTrajectory {
     azimuth: number;
@@ -61,51 +63,80 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
     };
 
     // Filter satellites for selected time
-    const filteredSatellites = skyplotData.map((satellite) => {
-        const trajectoryPoint = satellite.trajectory.find(
-            (point) => point.time === selectedTime
-        );
-        return trajectoryPoint
-            ? {
-                satellite,
-                point: trajectoryPoint,
-            }
-            : null;
-    }).filter(Boolean) as { satellite: Satellite; point: SatelliteTrajectory }[];
+    const filteredSatellites = skyplotData
+        .map((satellite) => {
+            const trajectoryPoint = satellite.trajectory.find(
+                (point) => point.time === selectedTime
+            );
+            return trajectoryPoint
+                ? {
+                    satellite,
+                    point: trajectoryPoint,
+                }
+                : null;
+        })
+        .filter(Boolean) as { satellite: Satellite; point: SatelliteTrajectory }[];
 
-    // Prepare data for Plotly (Explicitly use Partial<ScatterData> type)
-    const plotData: Partial<ScatterData>[] = filteredSatellites.map(({satellite, point}) => ({
-        type: "scatterpolar",  // ✅ Correct type for Polar Plot
-        mode: "markers",
-        r: [90 - point.elevation], // Convert elevation: closer to center = higher elevation
-        theta: [point.azimuth], // Azimuth angle
-        marker: {
-            size: 8,
-            color: point.visible ? colorMap[satellite.constellation] || "gray" : "gray",
-            symbol: point.visible ? "circle" : "x",
+    // Prepare data for Chart.js (Scatter Polar Plot)
+    const chartData = {
+        datasets: filteredSatellites.map(({satellite, point}) => ({
+            label: `${satellite.constellation} - ${satellite.satellite_id}`,
+            data: [
+                {
+                    x: point.azimuth, // Azimuth (angle in degrees)
+                    y: 90 - point.elevation, // Convert elevation: higher values closer to center
+                },
+            ],
+            backgroundColor: point.visible ? colorMap[satellite.constellation] || "gray" : "gray",
+            borderColor: "black",
+            pointRadius: 5,
+            pointHoverRadius: 7,
+        })),
+    };
+
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: "top" as const,
+                labels: {
+                    boxWidth: 15,
+                    padding: 10,
+                    font: {size: 12},
+                },
+            },
+            tooltip: {
+                mode: "index" as const,
+                intersect: false,
+            },
         },
-        name: `${satellite.constellation} - ${satellite.satellite_id}`,
-    }));
+        scales: {
+            r: {
+                min: 0,
+                max: 90, // 0 (center) is zenith, 90 is horizon
+                reverse: true, // Ensure the lowest values are at the center
+                title: {display: true, text: "Elevation (°)"},
+                grid: {color: "rgba(200, 200, 200, 0.3)"},
+            },
+            theta: {
+                min: 0,
+                max: 360,
+                title: {display: true, text: "Azimuth (°)"},
+                grid: {color: "rgba(200, 200, 200, 0.3)"},
+                ticks: {stepSize: 30}, // Ensure azimuth labels are readable
+            },
+        },
+    };
 
     return (
         <div className="p-6 bg-white shadow-md rounded-md mt-6">
             <h3 className="text-xl font-semibold mb-4">SkyPlot</h3>
 
             {/* Skyplot Chart */}
-            <Plot
-                data={plotData} // ✅ Fixed Type Issue
-                layout={{
-                    title: `Satellite Skyplot at ${new Date(selectedTime).toLocaleTimeString()}`,
-                    width: 700,
-                    height: 700,
-                    polar: {
-                        radialaxis: {range: [0, 90], showgrid: true, showline: false},
-                        angularaxis: {direction: "clockwise", rotation: 90},
-                    },
-                    showlegend: true,
-                }}
-                config={{responsive: true}}
-            />
+            <div className="h-[600px] w-[600px] mx-auto">
+                <Scatter data={chartData} options={options}/>
+            </div>
 
             {/* Time Slider */}
             <div className="mt-4 flex flex-col items-center">
