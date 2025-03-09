@@ -4,25 +4,27 @@ import {Chart, registerables} from "chart.js";
 
 Chart.register(...registerables);
 
-interface DOPData {
-    time: string[];
-    gdop: number[];
-    pdop: number[];
-    hdop: number[];
-    vdop: number[];
-}
-
 interface DOPPlotProps {
-    data: DOPData;
+    responseData: any;
 }
 
-const DOPPlot: React.FC<DOPPlotProps> = ({data}) => {
+const DOPPlot: React.FC<DOPPlotProps> = ({responseData}) => {
+    if (!responseData || !responseData.receivers || responseData.receivers.length === 0) {
+        return <p className="text-red-500">No DOP data available.</p>;
+    }
+
+    const dopData = responseData.receivers[0]?.dop;
+    if (!dopData) {
+        return <p className="text-red-500">No DOP values found.</p>;
+    }
+
+    // Extract the time and DOP values
     const chartData = {
-        labels: data.time.map((t) => new Date(t).toLocaleTimeString()), // Format time for better readability
+        labels: dopData.time.map((t: string) => new Date(t).toLocaleTimeString()), // Convert to readable format
         datasets: [
             {
                 label: "GDOP",
-                data: data.gdop,
+                data: dopData.gdop,
                 borderColor: "rgba(255, 0, 0, 0.8)",
                 backgroundColor: "rgba(255, 0, 0, 0.2)",
                 borderWidth: 2,
@@ -31,7 +33,7 @@ const DOPPlot: React.FC<DOPPlotProps> = ({data}) => {
             },
             {
                 label: "PDOP",
-                data: data.pdop,
+                data: dopData.pdop,
                 borderColor: "rgba(0, 0, 255, 0.8)",
                 backgroundColor: "rgba(0, 0, 255, 0.2)",
                 borderWidth: 2,
@@ -40,7 +42,7 @@ const DOPPlot: React.FC<DOPPlotProps> = ({data}) => {
             },
             {
                 label: "HDOP",
-                data: data.hdop,
+                data: dopData.hdop,
                 borderColor: "rgba(0, 128, 0, 0.8)",
                 backgroundColor: "rgba(0, 128, 0, 0.2)",
                 borderWidth: 2,
@@ -49,7 +51,7 @@ const DOPPlot: React.FC<DOPPlotProps> = ({data}) => {
             },
             {
                 label: "VDOP",
-                data: data.vdop,
+                data: dopData.vdop,
                 borderColor: "rgba(128, 0, 128, 0.8)",
                 backgroundColor: "rgba(128, 0, 128, 0.2)",
                 borderWidth: 2,
@@ -64,7 +66,7 @@ const DOPPlot: React.FC<DOPPlotProps> = ({data}) => {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: "chartArea" as const,
+                position: "top" as const,
                 labels: {
                     boxWidth: 15,
                     padding: 10,
@@ -80,7 +82,6 @@ const DOPPlot: React.FC<DOPPlotProps> = ({data}) => {
         },
         scales: {
             x: {
-                type: "category" as const, // ✅ FIX: Ensure it's a valid type
                 title: {display: true, text: "Time (HH:MM:SS)"},
                 ticks: {autoSkip: true, maxRotation: 45, minRotation: 0},
             },
@@ -93,7 +94,7 @@ const DOPPlot: React.FC<DOPPlotProps> = ({data}) => {
     };
 
     return (
-        <div className="p-4 bg-white shadow-md rounded-md">
+        <div className="p-4 bg-white shadow-md rounded-md mt-6">
             <h3 className="text-xl font-semibold mb-4">Dilution of Precision (DOP)</h3>
             <div className="h-[400px]">
                 <Line data={chartData} options={options}/>
