@@ -4,19 +4,25 @@ import {Chart, registerables} from "chart.js";
 
 Chart.register(...registerables);
 
-interface VisibilityData {
-    time: string[];
-    satelliteCounts: {
-        constellation: string;
-        counts: number[];
-    }[];
-}
-
 interface SatelliteVisibilityProps {
-    data: VisibilityData;
+    responseData: any;
 }
 
-const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({data}) => {
+const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({responseData}) => {
+    if (!responseData || !responseData.receivers || responseData.receivers.length === 0) {
+        return <p className="text-red-500">No satellite visibility data available.</p>;
+    }
+
+    const visibilityData = responseData.receivers[0]?.visibility;
+    if (!visibilityData) {
+        return <p className="text-red-500">No visibility values found.</p>;
+    }
+
+    // Extract time labels (assume first constellation defines the timestamps)
+    const firstConstellation = Object.keys(visibilityData)[0];
+    const timeLabels = visibilityData[firstConstellation].map((entry: any) => entry.time);
+
+    // Map colors for different constellations
     const colorMap: Record<string, string> = {
         GPS: "rgba(0, 0, 255, 0.8)",      // Blue
         GLONASS: "rgba(255, 0, 0, 0.8)",  // Red
@@ -24,13 +30,14 @@ const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({data}) => {
         BeiDou: "rgba(255, 165, 0, 0.8)", // Orange
     };
 
+    // Format data for Chart.js
     const chartData = {
-        labels: data.time.map((t) => new Date(t).toLocaleTimeString()),
-        datasets: data.satelliteCounts.map((sat) => ({
-            label: sat.constellation,
-            data: sat.counts,
-            backgroundColor: colorMap[sat.constellation] || "gray",
-            borderColor: colorMap[sat.constellation] || "gray",
+        labels: timeLabels.map((t: string) => new Date(t).toLocaleTimeString()), // Convert to readable time
+        datasets: Object.keys(visibilityData).map((constellation) => ({
+            label: constellation,
+            data: visibilityData[constellation].map((entry: any) => entry.count),
+            backgroundColor: colorMap[constellation] || "gray",
+            borderColor: colorMap[constellation] || "gray",
             borderWidth: 1,
         })),
     };
@@ -40,7 +47,7 @@ const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({data}) => {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: "chartArea" as const, // ✅ FIX: Valid predefined type
+                position: "top" as const,
                 labels: {
                     boxWidth: 15,
                     padding: 10,
@@ -56,7 +63,6 @@ const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({data}) => {
         },
         scales: {
             x: {
-                type: "category" as const,
                 title: {display: true, text: "Time (HH:MM:SS)"},
                 ticks: {autoSkip: true, maxRotation: 45, minRotation: 0},
             },
@@ -69,7 +75,7 @@ const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({data}) => {
     };
 
     return (
-        <div className="p-4 bg-white shadow-md rounded-md">
+        <div className="p-4 bg-white shadow-md rounded-md mt-6">
             <h3 className="text-xl font-semibold mb-4">Satellite Visibility</h3>
             <div className="h-[400px]">
                 <Bar data={chartData} options={options}/>

@@ -1,7 +1,8 @@
 import React from "react";
 import {useLocation} from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import DOPPlot from "../components/DOPPlot"; // Import the DOP chart component
+import DOPPlot from "../components/DOPPlot";
+import SatelliteVisibility from "../components/SatelliteVisibility";
 
 const ResultPage: React.FC = () => {
     const location = useLocation();
@@ -18,6 +19,9 @@ const ResultPage: React.FC = () => {
 
                 {/* DOP Chart */}
                 {responseData && <DOPPlot responseData={responseData}/>}
+
+                {/* Satellite Visibility Chart */}
+                {responseData && <SatelliteVisibility responseData={responseData}/>}
 
                 {/* Display API Response */}
                 <div className="p-4 border rounded-md bg-gray-50 mt-6">
