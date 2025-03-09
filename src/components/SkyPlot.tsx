@@ -1,15 +1,12 @@
 import React, {useState} from "react";
-import {Scatter} from "react-chartjs-2";
-import {Chart, registerables} from "chart.js";
+import Plot from "react-plotly.js";
+import {ScatterData} from "plotly.js";  // ✅ Correct type
 
-Chart.register(...registerables);
-
-// Define the expected structure of Skyplot data
 interface SatelliteTrajectory {
     azimuth: number;
     elevation: number;
     visible: boolean;
-    time: string; // Add timestamp to trajectory
+    time: string;
 }
 
 interface Satellite {
@@ -51,11 +48,11 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         )
     ).sort();
 
-    // Time selection state
+    // State for selected time
     const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
     const selectedTime = timestamps[selectedTimeIndex];
 
-    // Color mapping for satellite constellations
+    // Color mapping for different satellite constellations
     const colorMap: Record<string, string> = {
         GPS: "blue",
         GLONASS: "red",
@@ -63,7 +60,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         BeiDou: "orange",
     };
 
-    // Filter data for selected time
+    // Filter satellites for selected time
     const filteredSatellites = skyplotData.map((satellite) => {
         const trajectoryPoint = satellite.trajectory.find(
             (point) => point.time === selectedTime
@@ -76,68 +73,39 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
             : null;
     }).filter(Boolean) as { satellite: Satellite; point: SatelliteTrajectory }[];
 
-    // Prepare data for Chart.js
-    const chartData = {
-        datasets: filteredSatellites.map(({satellite, point}) => ({
-            label: `${satellite.constellation} - ${satellite.satellite_id}`,
-            data: [
-                {
-                    x: point.azimuth, // Azimuth (angle in degrees)
-                    y: 90 - Math.max(point.elevation, 0), // Convert elevation: higher values closer to center
-                },
-            ],
-            backgroundColor: point.visible
-                ? colorMap[satellite.constellation] || "gray"
-                : "gray",
-            borderColor: "black",
-            pointRadius: 5,
-            pointHoverRadius: 7,
-        })),
-    };
-
-    const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: "top" as const,
-                labels: {
-                    boxWidth: 15,
-                    padding: 10,
-                    font: {size: 12},
-                },
-            },
-            tooltip: {
-                mode: "index" as const,
-                intersect: false,
-            },
+    // Prepare data for Plotly (Explicitly use Partial<ScatterData> type)
+    const plotData: Partial<ScatterData>[] = filteredSatellites.map(({satellite, point}) => ({
+        type: "scatterpolar",  // ✅ Correct type for Polar Plot
+        mode: "markers",
+        r: [90 - point.elevation], // Convert elevation: closer to center = higher elevation
+        theta: [point.azimuth], // Azimuth angle
+        marker: {
+            size: 8,
+            color: point.visible ? colorMap[satellite.constellation] || "gray" : "gray",
+            symbol: point.visible ? "circle" : "x",
         },
-        scales: {
-            r: {
-                min: 0,
-                max: 90, // 0 (center) is zenith, 90 is horizon
-                reverse: true, // Ensure the lowest values are at the center
-                title: {display: true, text: "Elevation (°)"},
-                grid: {color: "rgba(200, 200, 200, 0.3)"},
-            },
-            theta: {
-                min: 0,
-                max: 360,
-                title: {display: true, text: "Azimuth (°)"},
-                grid: {color: "rgba(200, 200, 200, 0.3)"},
-                ticks: {stepSize: 30}, // Ensure azimuth labels are readable
-            },
-        },
-    };
+        name: `${satellite.constellation} - ${satellite.satellite_id}`,
+    }));
 
     return (
         <div className="p-6 bg-white shadow-md rounded-md mt-6">
             <h3 className="text-xl font-semibold mb-4">SkyPlot</h3>
 
             {/* Skyplot Chart */}
-            <div className="h-[600px] w-[600px] mx-auto">
-                <Scatter data={chartData} options={options}/>
-            </div>
+            <Plot
+                data={plotData} // ✅ Fixed Type Issue
+                layout={{
+                    title: `Satellite Skyplot at ${new Date(selectedTime).toLocaleTimeString()}`,
+                    width: 700,
+                    height: 700,
+                    polar: {
+                        radialaxis: {range: [0, 90], showgrid: true, showline: false},
+                        angularaxis: {direction: "clockwise", rotation: 90},
+                    },
+                    showlegend: true,
+                }}
+                config={{responsive: true}}
+            />
 
             {/* Time Slider */}
             <div className="mt-4 flex flex-col items-center">
