@@ -4,23 +4,21 @@ import {Chart, registerables} from "chart.js";
 
 Chart.register(...registerables);
 
-interface SkyPlotData {
-    satellites: {
-        constellation: string;
-        satellite_id: string;
-        trajectory: {
-            azimuth: number;
-            elevation: number;
-            visible: boolean;
-        }[];
-    }[];
-}
-
 interface SkyPlotProps {
-    data: SkyPlotData;
+    responseData: any;
 }
 
-const SkyPlot: React.FC<SkyPlotProps> = ({data}) => {
+const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
+    if (!responseData || !responseData.receivers || responseData.receivers.length === 0) {
+        return <p className="text-red-500">No Skyplot data available.</p>;
+    }
+
+    const skyplotData = responseData.receivers[0]?.skyplot_data?.satellites;
+    if (!skyplotData || skyplotData.length === 0) {
+        return <p className="text-red-500">No satellites found in Skyplot data.</p>;
+    }
+
+    // Color mapping for satellite constellations
     const colorMap: Record<string, string> = {
         GPS: "blue",
         GLONASS: "red",
@@ -28,12 +26,13 @@ const SkyPlot: React.FC<SkyPlotProps> = ({data}) => {
         BeiDou: "orange",
     };
 
+    // Convert azimuth and elevation data for the polar scatter plot
     const chartData = {
-        datasets: data.satellites.map((satellite) => ({
+        datasets: skyplotData.map((satellite) => ({
             label: `${satellite.constellation} - ${satellite.satellite_id}`,
             data: satellite.trajectory.map((point) => ({
-                x: point.azimuth,
-                y: point.elevation,
+                x: point.azimuth,  // Azimuth (angle around the plot)
+                y: Math.max(point.elevation, 0), // Elevation (radius) - Ensure it's non-negative
             })),
             backgroundColor: satellite.trajectory.map((point) =>
                 point.visible ? colorMap[satellite.constellation] || "gray" : "gray"
@@ -47,8 +46,12 @@ const SkyPlot: React.FC<SkyPlotProps> = ({data}) => {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: "chartArea" as const, // ✅ FIXED Type Issue
-                labels: {boxWidth: 15, padding: 10, font: {size: 12}},
+                position: "top" as const,
+                labels: {
+                    boxWidth: 15,
+                    padding: 10,
+                    font: {size: 12},
+                },
             },
             tooltip: {
                 mode: "index" as const,
@@ -56,23 +59,23 @@ const SkyPlot: React.FC<SkyPlotProps> = ({data}) => {
             },
         },
         scales: {
-            x: {
+            r: {
+                title: {display: true, text: "Elevation (°)"},
+                min: 0,
+                max: 90,
+                grid: {color: "rgba(200, 200, 200, 0.3)"},
+            },
+            theta: {
                 title: {display: true, text: "Azimuth (°)"},
                 min: 0,
                 max: 360,
-                grid: {color: "rgba(200, 200, 200, 0.3)"},
-            },
-            y: {
-                title: {display: true, text: "Elevation (°)"},
-                min: 0, // ✅ FIX: Elevation can't be negative
-                max: 90,
                 grid: {color: "rgba(200, 200, 200, 0.3)"},
             },
         },
     };
 
     return (
-        <div className="p-4 bg-white shadow-md rounded-md">
+        <div className="p-4 bg-white shadow-md rounded-md mt-6">
             <h3 className="text-xl font-semibold mb-4">SkyPlot</h3>
             <div className="h-[400px]">
                 <Scatter data={chartData} options={options}/>
