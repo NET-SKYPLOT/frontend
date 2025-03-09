@@ -1,14 +1,37 @@
 import React from "react";
-import {Scatter} from "react-chartjs-2";
-import {Chart, registerables} from "chart.js";
+import { Scatter } from "react-chartjs-2";
+import { Chart, registerables } from "chart.js";
 
 Chart.register(...registerables);
 
-interface SkyPlotProps {
-    responseData: any;
+// Define the expected structure of Skyplot data
+interface SatelliteTrajectory {
+    azimuth: number;
+    elevation: number;
+    visible: boolean;
 }
 
-const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
+interface Satellite {
+    constellation: string;
+    satellite_id: string;
+    trajectory: SatelliteTrajectory[];
+}
+
+interface Receiver {
+    skyplot_data?: {
+        satellites: Satellite[];
+    };
+}
+
+interface ResponseData {
+    receivers?: Receiver[];
+}
+
+interface SkyPlotProps {
+    responseData: ResponseData;
+}
+
+const SkyPlot: React.FC<SkyPlotProps> = ({ responseData }) => {
     if (!responseData || !responseData.receivers || responseData.receivers.length === 0) {
         return <p className="text-red-500">No Skyplot data available.</p>;
     }
@@ -28,13 +51,13 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
 
     // Convert azimuth and elevation data for the polar scatter plot
     const chartData = {
-        datasets: skyplotData.map((satellite) => ({
+        datasets: skyplotData.map((satellite: Satellite) => ({
             label: `${satellite.constellation} - ${satellite.satellite_id}`,
-            data: satellite.trajectory.map((point) => ({
-                x: point.azimuth,  // Azimuth (angle around the plot)
+            data: satellite.trajectory.map((point: SatelliteTrajectory) => ({
+                x: point.azimuth, // Azimuth (angle around the plot)
                 y: Math.max(point.elevation, 0), // Elevation (radius) - Ensure it's non-negative
             })),
-            backgroundColor: satellite.trajectory.map((point) =>
+            backgroundColor: satellite.trajectory.map((point: SatelliteTrajectory) =>
                 point.visible ? colorMap[satellite.constellation] || "gray" : "gray"
             ),
             pointRadius: 5,
@@ -50,7 +73,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                 labels: {
                     boxWidth: 15,
                     padding: 10,
-                    font: {size: 12},
+                    font: { size: 12 },
                 },
             },
             tooltip: {
@@ -60,16 +83,16 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         },
         scales: {
             r: {
-                title: {display: true, text: "Elevation (°)"},
+                title: { display: true, text: "Elevation (°)" },
                 min: 0,
                 max: 90,
-                grid: {color: "rgba(200, 200, 200, 0.3)"},
+                grid: { color: "rgba(200, 200, 200, 0.3)" },
             },
             theta: {
-                title: {display: true, text: "Azimuth (°)"},
+                title: { display: true, text: "Azimuth (°)" },
                 min: 0,
                 max: 360,
-                grid: {color: "rgba(200, 200, 200, 0.3)"},
+                grid: { color: "rgba(200, 200, 200, 0.3)" },
             },
         },
     };
@@ -78,7 +101,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         <div className="p-4 bg-white shadow-md rounded-md mt-6">
             <h3 className="text-xl font-semibold mb-4">SkyPlot</h3>
             <div className="h-[400px]">
-                <Scatter data={chartData} options={options}/>
+                <Scatter data={chartData} options={options} />
             </div>
         </div>
     );
