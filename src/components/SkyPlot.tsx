@@ -1,8 +1,8 @@
 import React, {useState} from "react";
-import {Scatter} from "react-chartjs-2";
-import {Chart, registerables} from "chart.js";
+import {PolarArea} from "react-chartjs-2";
+import {Chart, RadialLinearScale, PointElement, Legend, Tooltip} from "chart.js";
 
-Chart.register(...registerables);
+Chart.register(RadialLinearScale, PointElement, Legend, Tooltip);
 
 interface SatelliteTrajectory {
     azimuth: number;
@@ -77,21 +77,23 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         })
         .filter(Boolean) as { satellite: Satellite; point: SatelliteTrajectory }[];
 
-    // Prepare data for Chart.js (Scatter Polar Plot)
+    // Prepare data for Chart.js (PolarArea)
     const chartData = {
-        datasets: filteredSatellites.map(({satellite, point}) => ({
-            label: `${satellite.constellation} - ${satellite.satellite_id}`,
-            data: [
-                {
-                    x: point.azimuth, // Azimuth (angle in degrees)
-                    y: 90 - point.elevation, // Convert elevation: higher values closer to center
-                },
-            ],
-            backgroundColor: point.visible ? colorMap[satellite.constellation] || "gray" : "gray",
-            borderColor: "black",
-            pointRadius: 5,
-            pointHoverRadius: 7,
-        })),
+        labels: filteredSatellites.map(
+            ({satellite}) => `${satellite.constellation} - ${satellite.satellite_id}`
+        ),
+        datasets: [
+            {
+                label: "Satellite Positions",
+                data: filteredSatellites.map(({point}) => 90 - point.elevation), // Elevation (closer to center = higher)
+                backgroundColor: filteredSatellites.map(
+                    ({satellite, point}) =>
+                        point.visible ? colorMap[satellite.constellation] || "gray" : "gray"
+                ),
+                borderColor: "black",
+                borderWidth: 1,
+            },
+        ],
     };
 
     const options = {
@@ -114,17 +116,10 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         scales: {
             r: {
                 min: 0,
-                max: 90, // 0 (center) is zenith, 90 is horizon
-                reverse: true, // Ensure the lowest values are at the center
+                max: 90,
+                reverse: true, // Ensure that lower elevation is at the center
                 title: {display: true, text: "Elevation (°)"},
                 grid: {color: "rgba(200, 200, 200, 0.3)"},
-            },
-            theta: {
-                min: 0,
-                max: 360,
-                title: {display: true, text: "Azimuth (°)"},
-                grid: {color: "rgba(200, 200, 200, 0.3)"},
-                ticks: {stepSize: 30}, // Ensure azimuth labels are readable
             },
         },
     };
@@ -135,7 +130,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
 
             {/* Skyplot Chart */}
             <div className="h-[600px] w-[600px] mx-auto">
-                <Scatter data={chartData} options={options}/>
+                <PolarArea data={chartData} options={options}/>
             </div>
 
             {/* Time Slider */}
