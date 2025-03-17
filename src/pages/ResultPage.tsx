@@ -24,7 +24,9 @@ const ResultPage: React.FC = () => {
 
     const thirdReceiverDopData = thirdReceiver?.common_dop;
     const thirdReceiverSkyplotData = thirdReceiver?.skyplot_data?.satellites || [];
-    
+
+    console.log(firstReceiverDopData);
+
     return (
         <div className="flex h-screen w-screen bg-gray-50">
             {/* Sidebar */}
