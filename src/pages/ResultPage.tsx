@@ -12,9 +12,8 @@ const ResultPage: React.FC = () => {
 
     const receivers = responseData?.receivers || [];
     const firstReceiver = receivers.length > 0 ? receivers[0] : null;
-    const dopData = firstReceiver?.dop;
-    const visibilityData = firstReceiver?.visibility;
-    const skyplotData = firstReceiver?.skyplot_data;
+    const secondReceiver = receivers.length > 1 ? receivers[1] : null;
+    const thirdReceiver = receivers.length > 2 ? receivers[2] : null;
 
     return (
         <div className="flex h-screen w-screen bg-gray-50">
@@ -26,34 +25,118 @@ const ResultPage: React.FC = () => {
                     Planning Request Results
                 </h1>
 
-                {/* Check if responseData exists and contains necessary data */}
                 {responseData ? (
                     <>
-                        {/* DOP Plot */}
-                        {dopData ? (
-                            <div className="mb-6">
-                                <DOPPlot data={dopData}/>
+                        {/* First Receiver Plots */}
+                        {firstReceiver && (
+                            <div className="mb-12">
+                                <h2 className="text-2xl font-semibold text-blue-700 mb-4">
+                                    Receiver 1 - Role: {firstReceiver.role.toUpperCase()}
+                                </h2>
+                                {firstReceiver.dop ? (
+                                    <div className="mb-6">
+                                        <DOPPlot data={firstReceiver.dop}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No DOP data available.</p>
+                                )}
+
+                                {firstReceiver.visibility ? (
+                                    <div className="mb-6">
+                                        <SatelliteVisibility data={firstReceiver.visibility}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No satellite visibility data available.</p>
+                                )}
+
+                                {firstReceiver.skyplot_data ? (
+                                    <div className="mb-6">
+                                        <SkyPlot responseData={firstReceiver.skyplot_data}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Skyplot data available.</p>
+                                )}
                             </div>
-                        ) : (
-                            <p className="text-red-500">No DOP data available.</p>
                         )}
 
-                        {/* Satellite Visibility */}
-                        {visibilityData ? (
-                            <div className="mb-6">
-                                <SatelliteVisibility data={visibilityData}/>
+                        {/* Second Receiver Plots */}
+                        {secondReceiver && (
+                            <div className="mb-12">
+                                <h2 className="text-2xl font-semibold text-green-700 mb-4">
+                                    Receiver 2 - Role: {secondReceiver.role.toUpperCase()}
+                                </h2>
+                                {secondReceiver.common_dop ? (
+                                    <div className="mb-6">
+                                        <DOPPlot data={secondReceiver.common_dop}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Common DOP data available.</p>
+                                )}
+
+                                {secondReceiver.common_visibility ? (
+                                    <div className="mb-6">
+                                        <SatelliteVisibility data={secondReceiver.common_visibility}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Common Visibility data available.</p>
+                                )}
+
+                                {secondReceiver.visibility ? (
+                                    <div className="mb-6">
+                                        <SatelliteVisibility data={secondReceiver.visibility}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Individual Visibility data available.</p>
+                                )}
+
+                                {secondReceiver.skyplot_data ? (
+                                    <div className="mb-6">
+                                        <SkyPlot responseData={secondReceiver.skyplot_data}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Skyplot data available.</p>
+                                )}
                             </div>
-                        ) : (
-                            <p className="text-red-500">No satellite visibility data available.</p>
                         )}
 
-                        {/* SkyPlot */}
-                        {skyplotData ? (
-                            <div className="mb-6">
-                                <SkyPlot responseData={responseData}/>
+                        {/* Third Receiver Plots */}
+                        {thirdReceiver && (
+                            <div className="mb-12">
+                                <h2 className="text-2xl font-semibold text-purple-700 mb-4">
+                                    Receiver 3 - Role: {thirdReceiver.role.toUpperCase()}
+                                </h2>
+                                {thirdReceiver.common_dop ? (
+                                    <div className="mb-6">
+                                        <DOPPlot data={thirdReceiver.common_dop}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Common DOP data available.</p>
+                                )}
+
+                                {thirdReceiver.common_visibility ? (
+                                    <div className="mb-6">
+                                        <SatelliteVisibility data={thirdReceiver.common_visibility}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Common Visibility data available.</p>
+                                )}
+
+                                {thirdReceiver.visibility ? (
+                                    <div className="mb-6">
+                                        <SatelliteVisibility data={thirdReceiver.visibility}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Individual Visibility data available.</p>
+                                )}
+
+                                {thirdReceiver.skyplot_data ? (
+                                    <div className="mb-6">
+                                        <SkyPlot responseData={thirdReceiver.skyplot_data}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Skyplot data available.</p>
+                                )}
                             </div>
-                        ) : (
-                            <p className="text-red-500">No Skyplot data available.</p>
                         )}
 
                         {/* Display Request Data */}
