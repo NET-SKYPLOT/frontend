@@ -15,7 +15,6 @@ interface Obstacle {
     id: string;
     coordinates: [number, number][];
     totalHeight: number;
-    groundHeight: number;
 }
 
 interface ObstacleConfigProps {
@@ -54,7 +53,6 @@ const ObstacleConfig: React.FC<ObstacleConfigProps> = ({obstacles, setObstacles,
             id: generateUniqueID(),
             coordinates: closedPolygon,
             totalHeight: 0,
-            groundHeight: 0,
         });
         setEditing(true);
     };
@@ -134,17 +132,6 @@ const ObstacleConfig: React.FC<ObstacleConfigProps> = ({obstacles, setObstacles,
                         className="border p-2 rounded w-full mb-3"
                     />
 
-                    <label className="block text-lg font-medium">Height from Ground (m):</label>
-                    <input
-                        type="number"
-                        min="0"
-                        value={currentObstacle.groundHeight}
-                        onChange={(e) =>
-                            setCurrentObstacle({...currentObstacle, groundHeight: Number(e.target.value)})
-                        }
-                        className="border p-2 rounded w-full"
-                    />
-
                     <button
                         onClick={saveObstacle}
                         className="bg-blue-500 text-white px-4 py-2 rounded mt-4 w-full hover:bg-blue-600"
@@ -163,7 +150,6 @@ const ObstacleConfig: React.FC<ObstacleConfigProps> = ({obstacles, setObstacles,
                                 <div>
                                     <p>
                                         <strong>Height:</strong> {obstacle.totalHeight}m
-                                        (Ground: {obstacle.groundHeight}m)
                                     </p>
                                 </div>
                                 <div className="flex space-x-2">

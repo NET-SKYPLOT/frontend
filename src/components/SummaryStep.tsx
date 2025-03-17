@@ -21,7 +21,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
             duration_hours: Number(formData.duration) / 60,
             dem: {
                 type: formData.selectedDEM || "",
-                source: "ot", // Assuming "ot" as the default source
+                source: "ot",
             },
             constellations: formData.constellations || [],
             receivers: formData.receivers.map((receiver: any) => ({
@@ -109,7 +109,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                                         <h5 className="text-md font-semibold">Obstacle {index + 1}</h5>
                                         <p><strong>ID:</strong> {obstacle.id}</p>
                                         <p><strong>Obstacle Height:</strong> {obstacle.totalHeight} meters</p>
-                                        <p><strong>Height from Ground:</strong> {obstacle.groundHeight} meters</p>
 
                                         {/* Obstacle Vertices */}
                                         <div className="mt-2">
