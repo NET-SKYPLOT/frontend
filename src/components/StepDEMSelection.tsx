@@ -47,7 +47,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
 
     // Categorize DEMs based on resolution, including new category for very high accuracy (≤10m)
     const categorizedDems = {
-        veryHigh: dems.filter(dem => dem.resolution < 10),
+        veryHigh: dems.filter(dem => dem.resolution <= 10),
         high: dems.filter(dem => dem.resolution <= 30),
         medium: dems.filter(dem => dem.resolution === 90),
         low: dems.filter(dem => dem.resolution >= 500)
