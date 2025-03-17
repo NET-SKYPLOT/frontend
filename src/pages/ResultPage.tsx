@@ -73,21 +73,13 @@ const ResultPage: React.FC = () => {
                                     <p className="text-red-500">No Common DOP data available.</p>
                                 )}
 
-                                {secondReceiver.common_visibility ? (
-                                    <div className="mb-6">
-                                        <SatelliteVisibility data={secondReceiver.common_visibility}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Common Visibility data available.</p>
-                                )}
-
-                                {secondReceiver.visibility ? (
-                                    <div className="mb-6">
-                                        <SatelliteVisibility data={secondReceiver.visibility}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Individual Visibility data available.</p>
-                                )}
+                                {/*{secondReceiver.common_visibility ? (*/}
+                                {/*    <div className="mb-6">*/}
+                                {/*        <SatelliteVisibility data={secondReceiver.common_visibility}/>*/}
+                                {/*    </div>*/}
+                                {/*) : (*/}
+                                {/*    <p className="text-red-500">No Common Visibility data available.</p>*/}
+                                {/*)}*/}
 
                                 {secondReceiver.skyplot_data ? (
                                     <div className="mb-6">
@@ -113,21 +105,13 @@ const ResultPage: React.FC = () => {
                                     <p className="text-red-500">No Common DOP data available.</p>
                                 )}
 
-                                {thirdReceiver.common_visibility ? (
-                                    <div className="mb-6">
-                                        <SatelliteVisibility data={thirdReceiver.common_visibility}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Common Visibility data available.</p>
-                                )}
-
-                                {thirdReceiver.visibility ? (
-                                    <div className="mb-6">
-                                        <SatelliteVisibility data={thirdReceiver.visibility}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Individual Visibility data available.</p>
-                                )}
+                                {/*{thirdReceiver.common_visibility ? (*/}
+                                {/*    <div className="mb-6">*/}
+                                {/*        <SatelliteVisibility data={thirdReceiver.common_visibility}/>*/}
+                                {/*    </div>*/}
+                                {/*) : (*/}
+                                {/*    <p className="text-red-500">No Common Visibility data available.</p>*/}
+                                {/*)}*/}
 
                                 {thirdReceiver.skyplot_data ? (
                                     <div className="mb-6">
