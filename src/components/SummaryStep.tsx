@@ -17,6 +17,8 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         ? {type: "GEDI_L3", source: "ot"} // Default DEM for backend when "No DEM" is chosen
         : formData.availableDems?.find((dem: any) => dem.type === formData.selectedDEM) || {type: "", source: "ot"};
 
+    console.log(selectedDem, selectedDem);
+
     const handleSubmit = async () => {
         setLoading(true);
         setError(null);
