@@ -40,14 +40,10 @@ export const fetchAvailableDems = async (receivers: any[]) => {
             }
             : null;
 
-        const finalResult = {
+        return {
             availableDems,
             recommendedDEM,
         };
-
-        console.log("Final Result Passed to Next Component:", finalResult);
-
-        return finalResult;
     } catch (error) {
         console.error("Error fetching DEMs:", error);
         return {availableDems: [], recommendedDEM: null};
