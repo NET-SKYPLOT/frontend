@@ -14,7 +14,7 @@ const tabs = [
 
 const Navbar = ({activeTab, setActiveTab}: NavbarProps) => {
     return (
-        <div className="mt-4 border-b bg-white text-gray-800 overflow-x-auto">
+        <div className="fixed top-0 left-0 w-full border-b bg-white text-gray-800 z-50 shadow-md">
             <div className="flex space-x-4 sm:space-x-6 px-4 sm:px-8 whitespace-nowrap">
                 {tabs.map((tab) => (
                     <button
