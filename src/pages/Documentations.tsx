@@ -53,7 +53,12 @@ const Documentations = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h3 className="text-2xl font-semibold">🔹 Step 3: Select GNSS Constellations</h3>
+                    <h3 className="text-2xl font-semibold">🔹 Step 3: Define Obstacles (Optional)</h3>
+                    <p>Draw obstacles on the map to simulate GNSS signal obstructions.</p>
+                </section>
+
+                <section className="mb-8">
+                    <h3 className="text-2xl font-semibold">🔹 Step 4: Select GNSS Constellations</h3>
                     <p>Choose the GNSS constellations you want to use:</p>
                     <ul className="list-disc pl-5 space-y-2">
                         <li>✅ GPS</li>
@@ -61,11 +66,6 @@ const Documentations = () => {
                         <li>✅ BeiDou</li>
                         <li>✅ GLONASS</li>
                     </ul>
-                </section>
-
-                <section className="mb-8">
-                    <h3 className="text-2xl font-semibold">🔹 Step 4: Define Obstacles (Optional)</h3>
-                    <p>Draw obstacles on the map to simulate GNSS signal obstructions.</p>
                 </section>
 
                 <section className="mb-8">
