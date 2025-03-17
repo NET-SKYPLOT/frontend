@@ -19,7 +19,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         source: "unknown"
     };
 
-    console.log(selectedDem, selectedDem);
+    const demSource = selectedDem.source === "Piemote Geoportale" ? "pgp" : "ot";
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -30,7 +30,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
             duration_hours: Number(formData.duration) / 60,
             dem: {
                 type: selectedDem.type,
-                source: selectedDem.source,
+                source: demSource,
             },
             constellations: formData.constellations || [],
             receivers: formData.receivers.map((receiver: any) => ({
