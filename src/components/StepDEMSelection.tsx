@@ -25,9 +25,14 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                 setDems(availableDems);
                 setRecommendedDEM(recommendedDEM);
 
+                setFormData((prev: any) => ({
+                    ...prev,
+                    availableDems,
+                    selectedDEM: recommendedDEM ? recommendedDEM.type : prev.selectedDEM,
+                }));
+
                 if (recommendedDEM) {
                     setSelectedDEM(recommendedDEM.type);
-                    setFormData((prev: any) => ({...prev, selectedDEM: recommendedDEM.type}));
                 }
             } catch (error) {
                 console.error("Failed to fetch DEMs:", error);

@@ -12,10 +12,12 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Find the selected DEM and its source
     const selectedDem = formData.selectedDEM === "no_dem"
-        ? {type: "GEDI_L3", source: "ot"} // Default DEM for backend when "No DEM" is chosen
-        : formData.availableDems?.find((dem: any) => dem.type === formData.selectedDEM) || {type: "", source: "ot"};
+        ? {type: "GEDI_L3", source: "ot"}
+        : formData.availableDems?.find((dem: any) => dem.type === formData.selectedDEM) || {
+        type: formData.selectedDEM,
+        source: "unknown"
+    };
 
     console.log(selectedDem, selectedDem);
 
@@ -112,8 +114,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
             <div className="p-4 border rounded-md bg-gray-50">
                 <h3 className="text-xl font-semibold">Selected Digital Elevation Model (DEM)</h3>
                 {formData.selectedDEM === "no_dem" ? (
-                    <p className="text-red-500"><strong>No DEM selected</strong> (Using GEDI L3 DTM 1000m for
-                        processing)</p>
+                    <p className="text-red-500"><strong>No DEM selected</strong></p>
                 ) : (
                     <p><strong>DEM Name:</strong> {formData.selectedDEM}</p>
                 )}
