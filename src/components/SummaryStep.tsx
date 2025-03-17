@@ -116,9 +116,11 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 {formData.selectedDEM === "no_dem" ? (
                     <p className="text-red-500"><strong>No DEM selected</strong></p>
                 ) : (
-                    <p><strong>DEM Name:</strong> {formData.selectedDEM}</p>
+                    <>
+                        <p><strong>DEM Name:</strong> {formData.selectedDEM}</p>
+                        <p><strong>DEM Source:</strong> {selectedDem.source}</p> {/* Only show when a DEM is selected */}
+                    </>
                 )}
-                <p><strong>DEM Source:</strong> {selectedDem.source}</p>
             </div>
 
             {/* Error Message */}
