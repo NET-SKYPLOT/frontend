@@ -98,6 +98,23 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                             </tr>
                             </thead>
                             <tbody>
+                            {/* Option to Continue Without DEM TODO */}
+                            <tr className="bg-red-100">
+                                <td className="border border-gray-300 px-4 py-2 text-center">
+                                    <input
+                                        type="radio"
+                                        name="selectedDEM"
+                                        value="no_dem"
+                                        checked={selectedDEM === "no_dem"}
+                                        disabled
+                                    />
+                                </td>
+                                <td className="border border-gray-300 px-4 py-2">Continue without DEM</td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">N/A</td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">Lowest</td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">Fastest</td>
+                            </tr>
+
                             {Object.entries(categorizedDems).map(([category, list]) => (
                                 <React.Fragment key={category}>
                                     {list.length > 0 && (
