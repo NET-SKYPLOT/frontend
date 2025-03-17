@@ -12,6 +12,11 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Find the selected DEM and its source
+    const selectedDem = formData.selectedDEM === "no_dem"
+        ? {type: "GEDI_L3", source: "ot"} // Default DEM for backend when "No DEM" is chosen
+        : formData.availableDems?.find((dem: any) => dem.type === formData.selectedDEM) || {type: "", source: "ot"};
+
     const handleSubmit = async () => {
         setLoading(true);
         setError(null);
@@ -20,8 +25,8 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
             start_datetime: new Date(formData.date).toISOString(),
             duration_hours: Number(formData.duration) / 60,
             dem: {
-                type: formData.selectedDEM || "",
-                source: "ot",
+                type: selectedDem.type,
+                source: selectedDem.source,
             },
             constellations: formData.constellations || [],
             receivers: formData.receivers.map((receiver: any) => ({
@@ -44,9 +49,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         };
 
         try {
-            const response = await axios.post("/api/v1/plan", requestData, {
-                timeout: 300000,
-            });
+            const response = await axios.post("/api/v1/plan", requestData, {timeout: 300000});
 
             navigate("/result", {state: {requestData, responseData: response.data}});
         } catch (err) {
@@ -99,45 +102,21 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                         <p><strong>Role:</strong> {receiver.role.toUpperCase()}</p>
                         <p><strong>Location:</strong> Lat {receiver.lat}, Lon {receiver.lon}</p>
                         <p><strong>Height from Ground:</strong> {receiver.height} meters</p>
-
-                        {/* Obstacles Section */}
-                        {receiver.obstacles && receiver.obstacles.length > 0 && (
-                            <div className="mt-3 p-3 border rounded-md bg-gray-100">
-                                <h4 className="text-lg font-semibold">Obstacles</h4>
-                                {receiver.obstacles.map((obstacle: any, index: number) => (
-                                    <div key={obstacle.id} className="p-2 border-b last:border-none">
-                                        <h5 className="text-md font-semibold">Obstacle {index + 1}</h5>
-                                        <p><strong>ID:</strong> {obstacle.id}</p>
-                                        <p><strong>Obstacle Height:</strong> {obstacle.totalHeight} meters</p>
-
-                                        {/* Obstacle Vertices */}
-                                        <div className="mt-2">
-                                            <p><strong>Vertices:</strong></p>
-                                            <ul className="ml-4 list-disc text-gray-700">
-                                                {obstacle.coordinates.map((vertex: [number, number], vIndex: number) => (
-                                                    <li key={vIndex}>
-                                                        Lat: {vertex[0]}, Lon: {vertex[1]}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                     </div>
                 ))}
             </div>
 
             {/* Selected DEM Section */}
-            {formData.selectedDEM ? (
-                <div className="p-4 border rounded-md bg-gray-50">
-                    <h3 className="text-xl font-semibold">Selected Digital Elevation Model (DEM)</h3>
+            <div className="p-4 border rounded-md bg-gray-50">
+                <h3 className="text-xl font-semibold">Selected Digital Elevation Model (DEM)</h3>
+                {formData.selectedDEM === "no_dem" ? (
+                    <p className="text-red-500"><strong>No DEM selected</strong> (Using GEDI L3 DTM 1000m for
+                        processing)</p>
+                ) : (
                     <p><strong>DEM Name:</strong> {formData.selectedDEM}</p>
-                </div>
-            ) : (
-                <p className="text-gray-500">No DEM selected.</p>
-            )}
+                )}
+                <p><strong>DEM Source:</strong> {selectedDem.source}</p>
+            </div>
 
             {/* Error Message */}
             {error && <p className="text-red-500">{error}</p>}
