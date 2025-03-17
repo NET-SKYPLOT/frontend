@@ -69,7 +69,7 @@ const OurTeam = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 justify-center">
                     {teamMembers.map((member, index) => (
                         <div key={member.name}
-                             className={`flex flex-col items-center text-center ${index >= 3 ? 'md:col-span-2' : ''}`}>
+                             className={`flex flex-col items-center text-center ${index >= 3 ? 'md:col-span-1' : ''}`}>
                             <img
                                 src={member.image}
                                 alt={member.name}
