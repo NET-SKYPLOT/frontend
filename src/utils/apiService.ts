@@ -13,8 +13,23 @@ export const fetchAvailableDems = async (receivers: any[]) => {
 
         const data = response.data;
 
-        // Extract available DEMs from response
-        const availableDems = data.available_sources?.ot?.dems || [];
+        // Extract DEMs from all available sources
+        const availableDems: { description: string; type: string; resolution: number; source: string }[] = [];
+
+        if (data.available_sources) {
+            for (const sourceKey in data.available_sources) {
+                if (data.available_sources[sourceKey].dems) {
+                    data.available_sources[sourceKey].dems.forEach((dem: any) => {
+                        availableDems.push({
+                            description: dem.description,
+                            type: dem.type,
+                            resolution: dem.resolution,
+                            source: data.available_sources[sourceKey].name, // Assign source name
+                        });
+                    });
+                }
+            }
+        }
 
         // Extract recommended DEM if available
         const recommendedDEM = data.recommended
@@ -26,11 +41,7 @@ export const fetchAvailableDems = async (receivers: any[]) => {
             : null;
 
         const finalResult = {
-            availableDems: availableDems.map((dem: any) => ({
-                description: dem.description,
-                type: dem.type,
-                resolution: dem.resolution,
-            })),
+            availableDems,
             recommendedDEM,
         };
 
@@ -39,6 +50,6 @@ export const fetchAvailableDems = async (receivers: any[]) => {
         return finalResult;
     } catch (error) {
         console.error("Error fetching DEMs:", error);
-        return { availableDems: [], recommendedDEM: null };
+        return {availableDems: [], recommendedDEM: null};
     }
 };
