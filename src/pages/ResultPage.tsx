@@ -15,9 +15,19 @@ const ResultPage: React.FC = () => {
     const secondReceiver = receivers.length > 1 ? receivers[1] : null;
     const thirdReceiver = receivers.length > 2 ? receivers[2] : null;
 
-    console.log(firstReceiver)
-    console.log(secondReceiver)
-    console.log(thirdReceiver)
+    const firstReceiverDopData = firstReceiver?.dop;
+    const firstReceiverVisibilityData = firstReceiver?.visibility;
+    const firstReceiverSkyplotData = firstReceiver?.skyplot_data;
+
+    const secondReceiverDopData = secondReceiver?.common_dop;
+    // const secondReceiverVisibilityData = secondReceiver?.common_visibility;
+    const secondReceiverSkyplotData = secondReceiver?.skyplot_data;
+
+    const thirdReceiverDopData = thirdReceiver?.common_dop;
+    // const thirdReceiverVisibilityData = thirdReceiver?.common_visibility;
+    const thirdReceiverSkyplotData = thirdReceiver?.skyplot_data;
+
+    console.log("Response Data:", responseData);
 
     return (
         <div className="flex h-screen w-screen bg-gray-50">
@@ -37,25 +47,29 @@ const ResultPage: React.FC = () => {
                                 <h2 className="text-2xl font-semibold text-blue-700 mb-4">
                                     Receiver 1 - Role: {firstReceiver.role.toUpperCase()}
                                 </h2>
-                                {firstReceiver.dop ? (
+                                {firstReceiverDopData ? (
                                     <div className="mb-6">
-                                        <DOPPlot data={firstReceiver.dop}/>
+                                        <DOPPlot data={firstReceiverDopData}/>
                                     </div>
                                 ) : (
                                     <p className="text-red-500">No DOP data available.</p>
                                 )}
 
-                                {firstReceiver.visibility ? (
+                                {firstReceiverVisibilityData ? (
                                     <div className="mb-6">
-                                        <SatelliteVisibility data={firstReceiver.visibility}/>
+                                        <SatelliteVisibility data={firstReceiverVisibilityData}/>
                                     </div>
                                 ) : (
                                     <p className="text-red-500">No satellite visibility data available.</p>
                                 )}
 
-                                <div className="mb-6">
-                                    <SkyPlot responseData={firstReceiver.skyplot_data}/>
-                                </div>
+                                {firstReceiverSkyplotData && Object.keys(firstReceiverSkyplotData).length > 0 ? (
+                                    <div className="mb-6">
+                                        <SkyPlot responseData={firstReceiverSkyplotData}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Skyplot data available.</p>
+                                )}
                             </div>
                         )}
 
@@ -65,25 +79,21 @@ const ResultPage: React.FC = () => {
                                 <h2 className="text-2xl font-semibold text-green-700 mb-4">
                                     Receiver 2 - Role: {secondReceiver.role.toUpperCase()}
                                 </h2>
-                                {secondReceiver.common_dop ? (
+                                {secondReceiverDopData ? (
                                     <div className="mb-6">
-                                        <DOPPlot data={secondReceiver.common_dop}/>
+                                        <DOPPlot data={secondReceiverDopData}/>
                                     </div>
                                 ) : (
                                     <p className="text-red-500">No Common DOP data available.</p>
                                 )}
 
-                                {/*{secondReceiver.common_visibility ? (*/}
-                                {/*    <div className="mb-6">*/}
-                                {/*        <SatelliteVisibility data={secondReceiver.common_visibility}/>*/}
-                                {/*    </div>*/}
-                                {/*) : (*/}
-                                {/*    <p className="text-red-500">No Common Visibility data available.</p>*/}
-                                {/*)}*/}
-
-                                <div className="mb-6">
-                                    <SkyPlot responseData={secondReceiver.skyplot_data}/>
-                                </div>
+                                {secondReceiverSkyplotData && Object.keys(secondReceiverSkyplotData).length > 0 ? (
+                                    <div className="mb-6">
+                                        <SkyPlot responseData={secondReceiverSkyplotData}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Skyplot data available.</p>
+                                )}
                             </div>
                         )}
 
@@ -93,25 +103,21 @@ const ResultPage: React.FC = () => {
                                 <h2 className="text-2xl font-semibold text-purple-700 mb-4">
                                     Receiver 3 - Role: {thirdReceiver.role.toUpperCase()}
                                 </h2>
-                                {thirdReceiver.common_dop ? (
+                                {thirdReceiverDopData ? (
                                     <div className="mb-6">
-                                        <DOPPlot data={thirdReceiver.common_dop}/>
+                                        <DOPPlot data={thirdReceiverDopData}/>
                                     </div>
                                 ) : (
                                     <p className="text-red-500">No Common DOP data available.</p>
                                 )}
 
-                                {/*{thirdReceiver.common_visibility ? (*/}
-                                {/*    <div className="mb-6">*/}
-                                {/*        <SatelliteVisibility data={thirdReceiver.common_visibility}/>*/}
-                                {/*    </div>*/}
-                                {/*) : (*/}
-                                {/*    <p className="text-red-500">No Common Visibility data available.</p>*/}
-                                {/*)}*/}
-
-                                <div className="mb-6">
-                                    <SkyPlot responseData={thirdReceiver.skyplot_data}/>
-                                </div>
+                                {thirdReceiverSkyplotData && Object.keys(thirdReceiverSkyplotData).length > 0 ? (
+                                    <div className="mb-6">
+                                        <SkyPlot responseData={thirdReceiverSkyplotData}/>
+                                    </div>
+                                ) : (
+                                    <p className="text-red-500">No Skyplot data available.</p>
+                                )}
                             </div>
                         )}
 
