@@ -26,14 +26,6 @@ const ResultPage: React.FC = () => {
                     Planning Request Results
                 </h1>
 
-                {/* Display Request Data */}
-                <div className="p-4 border rounded-md bg-gray-50 mb-6">
-                    <h2 className="text-xl font-semibold">Request Data</h2>
-                    <pre className="p-3 bg-gray-100 rounded-md overflow-x-auto">
-                        {JSON.stringify(requestData, null, 2)}
-                    </pre>
-                </div>
-
                 {/* Check if responseData exists and contains necessary data */}
                 {responseData ? (
                     <>
@@ -63,6 +55,14 @@ const ResultPage: React.FC = () => {
                         ) : (
                             <p className="text-red-500">No Skyplot data available.</p>
                         )}
+
+                        {/* Display Request Data */}
+                        <div className="p-4 border rounded-md bg-gray-50 mb-6">
+                            <h2 className="text-xl font-semibold">Request Data</h2>
+                            <pre className="p-3 bg-gray-100 rounded-md overflow-x-auto">
+                                {JSON.stringify(requestData, null, 2)}
+                            </pre>
+                        </div>
 
                         {/* Display API Response */}
                         <div className="p-4 border rounded-md bg-gray-50">
