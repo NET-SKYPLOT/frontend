@@ -53,13 +53,9 @@ const ResultPage: React.FC = () => {
                                     <p className="text-red-500">No satellite visibility data available.</p>
                                 )}
 
-                                {firstReceiver.skyplot_data ? (
-                                    <div className="mb-6">
-                                        <SkyPlot responseData={firstReceiver.skyplot_data}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Skyplot data available.</p>
-                                )}
+                                <div className="mb-6">
+                                    <SkyPlot responseData={firstReceiver.skyplot_data}/>
+                                </div>
                             </div>
                         )}
 
@@ -85,13 +81,9 @@ const ResultPage: React.FC = () => {
                                 {/*    <p className="text-red-500">No Common Visibility data available.</p>*/}
                                 {/*)}*/}
 
-                                {secondReceiver.skyplot_data ? (
-                                    <div className="mb-6">
-                                        <SkyPlot responseData={secondReceiver.skyplot_data}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Skyplot data available.</p>
-                                )}
+                                <div className="mb-6">
+                                    <SkyPlot responseData={secondReceiver.skyplot_data}/>
+                                </div>
                             </div>
                         )}
 
@@ -117,13 +109,9 @@ const ResultPage: React.FC = () => {
                                 {/*    <p className="text-red-500">No Common Visibility data available.</p>*/}
                                 {/*)}*/}
 
-                                {thirdReceiver.skyplot_data ? (
-                                    <div className="mb-6">
-                                        <SkyPlot responseData={thirdReceiver.skyplot_data}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Skyplot data available.</p>
-                                )}
+                                <div className="mb-6">
+                                    <SkyPlot responseData={thirdReceiver.skyplot_data}/>
+                                </div>
                             </div>
                         )}
 
