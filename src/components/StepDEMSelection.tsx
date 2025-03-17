@@ -40,10 +40,16 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
         void fetchData();
     }, [formData.receivers]);
 
-
     const handleDEMSelection = (dem: string) => {
         setSelectedDEM(dem);
         setFormData((prev: any) => ({...prev, selectedDEM: dem}));
+    };
+
+    // Categorize DEMs based on resolution
+    const categorizedDems = {
+        high: dems.filter(dem => dem.resolution <= 30),
+        medium: dems.filter(dem => dem.resolution === 90),
+        low: dems.filter(dem => dem.resolution >= 500)
     };
 
     return (
@@ -56,7 +62,13 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                 <div className="p-4 border rounded-md bg-gray-50">
                     <h3 className="text-lg font-semibold">Available DEMs</h3>
 
-                    {/* Recommended DEM (if exists) */}
+                    {/* Accuracy Information */}
+                    <p className="text-sm text-gray-600">
+                        Higher resolution DEMs (≤30m) provide more accuracy but require more computation.
+                        Lower resolution DEMs (≥500m) are faster but less detailed.
+                    </p>
+
+                    {/* Recommended DEM (if available) */}
                     {recommendedDEM && (
                         <div className="p-3 border rounded-md bg-green-100 mb-4">
                             <p className="font-semibold text-green-800">Recommended DEM:</p>
@@ -73,23 +85,56 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                         </div>
                     )}
 
-                    {/* List of Other Available DEMs */}
-                    {dems.length > 0 ? (
-                        dems.map((dem, index) => (
-                            <label key={index} className="flex items-center space-x-2 p-2 border rounded-md">
-                                <input
-                                    type="radio"
-                                    name="selectedDEM"
-                                    value={dem.type}
-                                    checked={selectedDEM === dem.type}
-                                    onChange={() => handleDEMSelection(dem.type)}
-                                />
-                                <span>{dem.description} ({dem.resolution}m resolution)</span>
-                            </label>
-                        ))
-                    ) : (
-                        <p className="text-gray-500">No DEMs available for the selected receivers.</p>
-                    )}
+                    {/* DEM Comparison Table */}
+                    <div className="overflow-x-auto">
+                        <table className="w-full border-collapse border border-gray-300 mt-4">
+                            <thead>
+                            <tr className="bg-gray-200">
+                                <th className="border border-gray-300 px-4 py-2">Select</th>
+                                <th className="border border-gray-300 px-4 py-2">Description</th>
+                                <th className="border border-gray-300 px-4 py-2">Resolution (m)</th>
+                                <th className="border border-gray-300 px-4 py-2">Accuracy</th>
+                                <th className="border border-gray-300 px-4 py-2">Resource Demand</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {Object.entries(categorizedDems).map(([category, list]) => (
+                                <React.Fragment key={category}>
+                                    {list.length > 0 && (
+                                        <tr className="bg-gray-100">
+                                            <td colSpan={5} className="text-center font-semibold py-2">
+                                                {category === "high" && "High Accuracy (≤30m)"}
+                                                {category === "medium" && "Medium Accuracy (90m)"}
+                                                {category === "low" && "Low Accuracy (≥500m)"}
+                                            </td>
+                                        </tr>
+                                    )}
+                                    {list.map((dem, index) => (
+                                        <tr key={index} className="hover:bg-gray-50">
+                                            <td className="border border-gray-300 px-4 py-2 text-center">
+                                                <input
+                                                    type="radio"
+                                                    name="selectedDEM"
+                                                    value={dem.type}
+                                                    checked={selectedDEM === dem.type}
+                                                    onChange={() => handleDEMSelection(dem.type)}
+                                                />
+                                            </td>
+                                            <td className="border border-gray-300 px-4 py-2">{dem.description}</td>
+                                            <td className="border border-gray-300 px-4 py-2 text-center">{dem.resolution}</td>
+                                            <td className="border border-gray-300 px-4 py-2 text-center">
+                                                {category === "high" ? "High" : category === "medium" ? "Medium" : "Low"}
+                                            </td>
+                                            <td className="border border-gray-300 px-4 py-2 text-center">
+                                                {category === "high" ? "High" : category === "medium" ? "Medium" : "Low"}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </React.Fragment>
+                            ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 
