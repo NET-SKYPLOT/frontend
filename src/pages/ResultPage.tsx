@@ -15,6 +15,10 @@ const ResultPage: React.FC = () => {
     const secondReceiver = receivers.length > 1 ? receivers[1] : null;
     const thirdReceiver = receivers.length > 2 ? receivers[2] : null;
 
+    console.log(firstReceiver)
+    console.log(secondReceiver)
+    console.log(thirdReceiver)
+
     return (
         <div className="flex h-screen w-screen bg-gray-50">
             {/* Sidebar */}
