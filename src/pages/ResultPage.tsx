@@ -17,18 +17,14 @@ const ResultPage: React.FC = () => {
 
     const firstReceiverDopData = firstReceiver?.dop;
     const firstReceiverVisibilityData = firstReceiver?.visibility;
-    const firstReceiverSkyplotData = firstReceiver?.skyplot_data;
+    const firstReceiverSkyplotData = firstReceiver?.skyplot_data?.satellites || [];
 
     const secondReceiverDopData = secondReceiver?.common_dop;
-    // const secondReceiverVisibilityData = secondReceiver?.common_visibility;
-    const secondReceiverSkyplotData = secondReceiver?.skyplot_data;
+    const secondReceiverSkyplotData = secondReceiver?.skyplot_data?.satellites || [];
 
     const thirdReceiverDopData = thirdReceiver?.common_dop;
-    // const thirdReceiverVisibilityData = thirdReceiver?.common_visibility;
-    const thirdReceiverSkyplotData = thirdReceiver?.skyplot_data;
-
-    console.log("Response Data:", responseData);
-
+    const thirdReceiverSkyplotData = thirdReceiver?.skyplot_data?.satellites || [];
+    
     return (
         <div className="flex h-screen w-screen bg-gray-50">
             {/* Sidebar */}
@@ -63,7 +59,7 @@ const ResultPage: React.FC = () => {
                                     <p className="text-red-500">No satellite visibility data available.</p>
                                 )}
 
-                                {firstReceiverSkyplotData && Object.keys(firstReceiverSkyplotData).length > 0 ? (
+                                {firstReceiverSkyplotData.length > 0 ? (
                                     <div className="mb-6">
                                         <SkyPlot responseData={firstReceiverSkyplotData}/>
                                     </div>
@@ -87,7 +83,7 @@ const ResultPage: React.FC = () => {
                                     <p className="text-red-500">No Common DOP data available.</p>
                                 )}
 
-                                {secondReceiverSkyplotData && Object.keys(secondReceiverSkyplotData).length > 0 ? (
+                                {secondReceiverSkyplotData.length > 0 ? (
                                     <div className="mb-6">
                                         <SkyPlot responseData={secondReceiverSkyplotData}/>
                                     </div>
@@ -111,7 +107,7 @@ const ResultPage: React.FC = () => {
                                     <p className="text-red-500">No Common DOP data available.</p>
                                 )}
 
-                                {thirdReceiverSkyplotData && Object.keys(thirdReceiverSkyplotData).length > 0 ? (
+                                {thirdReceiverSkyplotData.length > 0 ? (
                                     <div className="mb-6">
                                         <SkyPlot responseData={thirdReceiverSkyplotData}/>
                                     </div>
