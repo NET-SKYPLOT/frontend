@@ -8,7 +8,7 @@ interface StepThreeProps {
 }
 
 const StepThree: React.FC<StepThreeProps> = ({formData, setFormData, nextStep, prevStep}) => {
-    const constellations = ["BeiDou", "GPS", "Galileo", "GLONASS"];
+    const constellations = ["BEIDOU", "GPS", "GALILEO", "GLONASS"];
 
     const handleCheckboxChange = (constellation: string) => {
         setFormData((prevData: any) => {

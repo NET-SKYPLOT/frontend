@@ -58,8 +58,8 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
     const colorMap: Record<string, string> = {
         GPS: "blue",
         GLONASS: "red",
-        Galileo: "green",
-        BeiDou: "orange",
+        GALILEO: "green",
+        BEIDOU: "orange",
     };
 
     // Filter satellites for selected time

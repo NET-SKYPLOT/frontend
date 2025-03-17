@@ -30,8 +30,8 @@ const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({data}) => {
     const colorMap: Record<string, string> = {
         GPS: "rgba(0, 0, 255, 0.8)",      // Blue
         GLONASS: "rgba(255, 0, 0, 0.8)",  // Red
-        Galileo: "rgba(0, 255, 0, 0.8)",  // Green
-        BeiDou: "rgba(255, 165, 0, 0.8)", // Orange
+        GALILEO: "rgba(0, 255, 0, 0.8)",  // Green
+        BEIDOU: "rgba(255, 165, 0, 0.8)", // Orange
     };
 
     // Format data for Chart.js
