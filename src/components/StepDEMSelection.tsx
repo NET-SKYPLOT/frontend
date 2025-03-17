@@ -10,7 +10,7 @@ interface StepDEMSelectionProps {
 
 const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormData, nextStep, prevStep}) => {
     const [loading, setLoading] = useState(true);
-    const [dems, setDems] = useState<{ description: string; type: string; resolution: number }[]>([]);
+    const [dems, setDems] = useState<{ description: string; type: string; resolution: number; source: string }[]>([]);
     const [recommendedDEM, setRecommendedDEM] = useState<{
         description: string;
         type: string;
@@ -45,8 +45,9 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
         setFormData((prev: any) => ({...prev, selectedDEM: dem}));
     };
 
-    // Categorize DEMs based on resolution
+    // Categorize DEMs based on resolution, including new category for very high accuracy (≤10m)
     const categorizedDems = {
+        veryHigh: dems.filter(dem => dem.resolution < 10),
         high: dems.filter(dem => dem.resolution <= 30),
         medium: dems.filter(dem => dem.resolution === 90),
         low: dems.filter(dem => dem.resolution >= 500)
@@ -66,6 +67,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                     <p className="text-sm text-gray-600">
                         Higher resolution DEMs (≤30m) provide more accuracy but require more computation.
                         Lower resolution DEMs (≥500m) are faster but less detailed.
+                        Very high accuracy DEMs (≤10m) are extremely detailed but very resource-intensive.
                     </p>
 
                     {/* Recommended DEM (if available) */}
@@ -95,10 +97,11 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                                 <th className="border border-gray-300 px-4 py-2">Resolution (m)</th>
                                 <th className="border border-gray-300 px-4 py-2">Accuracy</th>
                                 <th className="border border-gray-300 px-4 py-2">Resource Demand</th>
+                                <th className="border border-gray-300 px-4 py-2">Source</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {/* Option to Continue Without DEM TODO */}
+                            {/* Option to Continue Without DEM (Now Enabled) */}
                             <tr className="bg-red-100">
                                 <td className="border border-gray-300 px-4 py-2 text-center">
                                     <input
@@ -106,48 +109,122 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                                         name="selectedDEM"
                                         value="no_dem"
                                         checked={selectedDEM === "no_dem"}
-                                        disabled
+                                        onChange={() => handleDEMSelection("no_dem")}
                                     />
                                 </td>
                                 <td className="border border-gray-300 px-4 py-2">Continue without DEM</td>
                                 <td className="border border-gray-300 px-4 py-2 text-center">N/A</td>
                                 <td className="border border-gray-300 px-4 py-2 text-center">Lowest</td>
                                 <td className="border border-gray-300 px-4 py-2 text-center">Fastest</td>
+                                <td className="border border-gray-300 px-4 py-2 text-center">N/A</td>
                             </tr>
 
-                            {Object.entries(categorizedDems).map(([category, list]) => (
-                                <React.Fragment key={category}>
-                                    {list.length > 0 && (
-                                        <tr className="bg-gray-100">
-                                            <td colSpan={5} className="text-center font-semibold py-2">
-                                                {category === "high" && "High Accuracy (≤30m)"}
-                                                {category === "medium" && "Medium Accuracy (90m)"}
-                                                {category === "low" && "Low Accuracy (≥500m)"}
-                                            </td>
-                                        </tr>
-                                    )}
-                                    {list.map((dem, index) => (
-                                        <tr key={index} className="hover:bg-gray-50">
-                                            <td className="border border-gray-300 px-4 py-2 text-center">
-                                                <input
-                                                    type="radio"
-                                                    name="selectedDEM"
-                                                    value={dem.type}
-                                                    checked={selectedDEM === dem.type}
-                                                    onChange={() => handleDEMSelection(dem.type)}
-                                                />
-                                            </td>
-                                            <td className="border border-gray-300 px-4 py-2">{dem.description}</td>
-                                            <td className="border border-gray-300 px-4 py-2 text-center">{dem.resolution}</td>
-                                            <td className="border border-gray-300 px-4 py-2 text-center">
-                                                {category === "high" ? "High" : category === "medium" ? "Medium" : "Low"}
-                                            </td>
-                                            <td className="border border-gray-300 px-4 py-2 text-center">
-                                                {category === "high" ? "High" : category === "medium" ? "Medium" : "Low"}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </React.Fragment>
+                            {/* Very High Accuracy (≤10m) DEMs */}
+                            {categorizedDems.veryHigh.length > 0 && (
+                                <tr className="bg-gray-100">
+                                    <td colSpan={6} className="text-center font-semibold py-2">
+                                        Very High Accuracy (≤10m)
+                                    </td>
+                                </tr>
+                            )}
+                            {categorizedDems.veryHigh.map((dem, index) => (
+                                <tr key={index} className="hover:bg-gray-50">
+                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                        <input
+                                            type="radio"
+                                            name="selectedDEM"
+                                            value={dem.type}
+                                            checked={selectedDEM === dem.type}
+                                            onChange={() => handleDEMSelection(dem.type)}
+                                        />
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">{dem.description}</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">{dem.resolution}</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">Very High</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">Very High</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">{dem.source}</td>
+                                </tr>
+                            ))}
+
+                            {/* High Accuracy (≤30m) DEMs */}
+                            {categorizedDems.high.length > 0 && (
+                                <tr className="bg-gray-100">
+                                    <td colSpan={6} className="text-center font-semibold py-2">
+                                        High Accuracy (≤30m)
+                                    </td>
+                                </tr>
+                            )}
+                            {categorizedDems.high.map((dem, index) => (
+                                <tr key={index} className="hover:bg-gray-50">
+                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                        <input
+                                            type="radio"
+                                            name="selectedDEM"
+                                            value={dem.type}
+                                            checked={selectedDEM === dem.type}
+                                            onChange={() => handleDEMSelection(dem.type)}
+                                        />
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">{dem.description}</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">{dem.resolution}</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">High</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">High</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">{dem.source}</td>
+                                </tr>
+                            ))}
+
+                            {/* Medium Accuracy (90m) DEMs */}
+                            {categorizedDems.medium.length > 0 && (
+                                <tr className="bg-gray-100">
+                                    <td colSpan={6} className="text-center font-semibold py-2">
+                                        Medium Accuracy (90m)
+                                    </td>
+                                </tr>
+                            )}
+                            {categorizedDems.medium.map((dem, index) => (
+                                <tr key={index} className="hover:bg-gray-50">
+                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                        <input
+                                            type="radio"
+                                            name="selectedDEM"
+                                            value={dem.type}
+                                            checked={selectedDEM === dem.type}
+                                            onChange={() => handleDEMSelection(dem.type)}
+                                        />
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">{dem.description}</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">{dem.resolution}</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">Medium</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">Medium</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">{dem.source}</td>
+                                </tr>
+                            ))}
+
+                            {/* Low Accuracy (≥500m) DEMs */}
+                            {categorizedDems.low.length > 0 && (
+                                <tr className="bg-gray-100">
+                                    <td colSpan={6} className="text-center font-semibold py-2">
+                                        Low Accuracy (≥500m)
+                                    </td>
+                                </tr>
+                            )}
+                            {categorizedDems.low.map((dem, index) => (
+                                <tr key={index} className="hover:bg-gray-50">
+                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                        <input
+                                            type="radio"
+                                            name="selectedDEM"
+                                            value={dem.type}
+                                            checked={selectedDEM === dem.type}
+                                            onChange={() => handleDEMSelection(dem.type)}
+                                        />
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">{dem.description}</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">{dem.resolution}</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">Low</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">Low</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">{dem.source}</td>
+                                </tr>
                             ))}
                             </tbody>
                         </table>
