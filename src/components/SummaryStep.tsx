@@ -1,21 +1,11 @@
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
-import {MapContainer, TileLayer, Marker} from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 
 interface SummaryStepProps {
     formData: any;
     prevStep: () => void;
 }
-
-const markerIcon = new L.Icon({
-    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-});
 
 const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
     const navigate = useNavigate();
@@ -116,6 +106,32 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                         <p><strong>Role:</strong> {receiver.role.toUpperCase()}</p>
                         <p><strong>Location:</strong> Lat {receiver.lat}, Lon {receiver.lon}</p>
                         <p><strong>Height from Ground:</strong> {receiver.height} meters</p>
+
+                        {/* Obstacles Section */}
+                        {receiver.obstacles && receiver.obstacles.length > 0 && (
+                            <div className="mt-3 p-3 border rounded-md bg-gray-100">
+                                <h4 className="text-lg font-semibold">Obstacles</h4>
+                                {receiver.obstacles.map((obstacle: any, index: number) => (
+                                    <div key={obstacle.id} className="p-2 border-b last:border-none">
+                                        <h5 className="text-md font-semibold">Obstacle {index + 1}</h5>
+                                        <p><strong>ID:</strong> {obstacle.id}</p>
+                                        <p><strong>Obstacle Height:</strong> {obstacle.totalHeight} meters</p>
+
+                                        {/* Obstacle Vertices */}
+                                        <div className="mt-2">
+                                            <p><strong>Vertices:</strong></p>
+                                            <ul className="ml-4 list-disc text-gray-700">
+                                                {obstacle.coordinates.map((vertex: [number, number], vIndex: number) => (
+                                                    <li key={vIndex}>
+                                                        Lat: {vertex[0]}, Lon: {vertex[1]}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
@@ -128,36 +144,11 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 ) : (
                     <>
                         <p><strong>DEM Name:</strong> {formData.selectedDEM}</p>
-                        <p><strong>DEM Source:</strong> {selectedDem.source}</p>
+                        <p><strong>DEM Source:</strong> {selectedDem.source}
+                        </p> {/* Only show when a DEM is selected */}
                     </>
                 )}
             </div>
-
-            {/* Selected Locations Map */}
-            {formData.locations && formData.locations.length > 0 && (
-                <div className="p-4 border rounded-md bg-gray-50">
-                    <h3 className="text-xl font-semibold">Selected Locations</h3>
-
-                    {formData.locations.map((loc: any, index: number) => (
-                        <p key={index} className="text-gray-700">
-                            📍 <strong>Location {index + 1}:</strong> Lat {loc.lat}, Lon {loc.lon}
-                        </p>
-                    ))}
-
-                    <div className="w-full h-64 mt-6">
-                        <MapContainer
-                            center={[formData.locations[0].lat, formData.locations[0].lon]}
-                            zoom={2}
-                            className="w-full h-full rounded-md"
-                        >
-                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
-                            {formData.locations.map((loc: any, index: number) => (
-                                <Marker key={index} position={[loc.lat, loc.lon]} icon={markerIcon}/>
-                            ))}
-                        </MapContainer>
-                    </div>
-                </div>
-            )}
 
             {/* Error Message */}
             {error && <p className="text-red-500">{error}</p>}
@@ -182,7 +173,9 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 <button
                     onClick={handleSubmit}
                     disabled={loading}
-                    className={`px-6 py-2 rounded w-3/4 mx-1 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600 text-white"}`}
+                    className={`px-6 py-2 rounded w-3/4 mx-1 ${
+                        loading ? "bg-gray-400 cursor-not-allowed" : "bg-green-500 hover:bg-green-600 text-white"
+                    }`}
                 >
                     {loading ? "Submitting..." : "Submit"}
                 </button>
