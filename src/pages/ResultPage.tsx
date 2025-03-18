@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {useLocation} from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import DOPPlot from "../components/DOPPlot";
@@ -9,6 +9,10 @@ const ResultPage: React.FC = () => {
     const location = useLocation();
     const requestData = location.state?.requestData;
     const responseData = location.state?.responseData;
+
+    useEffect(() => {
+        console.log("Form Data:", location.state?.formData);
+    }, [location.state?.formData]);
 
     const receivers = responseData?.receivers || [];
     const firstReceiver = receivers.length > 0 ? receivers[0] : null;
