@@ -66,7 +66,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         try {
             const response = await axios.post("/api/v1/plan", requestData, {timeout: 300000});
 
-            navigate("/result", {state: {requestData, responseData: response.data}});
+            navigate("/result", {state: {formData, requestData, responseData: response.data}});
         } catch (err) {
             console.error("Error submitting planning request:", err);
             setError("Failed to submit request. Please try again.");
