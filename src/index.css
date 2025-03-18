@@ -7,9 +7,10 @@
     line-height: 1.5;
     font-weight: 400;
 
+    /* Force Light Mode */
     color-scheme: light !important;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+    color: #213547 !important;
+    background-color: #ffffff !important;
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -33,13 +34,11 @@ body {
     place-items: center;
     min-width: 320px;
     min-height: 100vh;
+    background-color: #ffffff !important;
+    color: #213547 !important;
 }
 
-h1 {
-    font-size: 3.2em;
-    line-height: 1.1;
-}
-
+/* Keep button styles unchanged */
 button {
     border-radius: 8px;
     border: 1px solid transparent;
@@ -61,18 +60,36 @@ button:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Ensure form elements (input, select, textarea) always stay light */
+input, select, textarea {
+    background-color: #ffffff !important;
+    color: #213547 !important;
+    border: 1px solid #d1d5db;
+}
+
 @media (prefers-color-scheme: light) {
     :root {
-        color: #213547;
-        background-color: #ffffff;
+        color: #213547 !important;
+        background-color: #ffffff !important;
     }
 
     a:hover {
         color: #747bff;
     }
+}
 
-    button {
-        background-color: #f9f9f9;
+/* Force light mode even if the OS is in dark mode */
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: light !important;
+        background-color: #ffffff !important;
+        color: #213547 !important;
+    }
+
+    input, select, textarea {
+        background-color: #ffffff !important;
+        color: #213547 !important;
+        border: 1px solid #d1d5db !important;
     }
 }
 
