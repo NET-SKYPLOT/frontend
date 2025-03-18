@@ -54,8 +54,9 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
     const categorizedDems = {
         veryHigh: dems.filter(dem => dem.resolution <= 10),
         high: dems.filter(dem => dem.resolution > 10 && dem.resolution <= 30),
-        medium: dems.filter(dem => dem.resolution === 90),
-        low: dems.filter(dem => dem.resolution >= 500)
+        medium: dems.filter(dem => dem.resolution > 30 && dem.resolution <= 90),
+        low: dems.filter(dem => dem.resolution > 90 && dem.resolution <= 500),
+        veryLow: dems.filter(dem => dem.resolution > 500)
     };
 
     return (
@@ -124,7 +125,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                                 <td className="border border-gray-300 px-4 py-2 text-center">N/A</td>
                             </tr>
 
-                            {/* Very High Accuracy (≤10m) DEMs */}
+                            {/* Very High Accuracy DEMs */}
                             {categorizedDems.veryHigh.length > 0 && (
                                 <tr className="bg-gray-100">
                                     <td colSpan={6} className="text-center font-semibold py-2">
@@ -151,7 +152,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                                 </tr>
                             ))}
 
-                            {/* High Accuracy (≤30m) DEMs */}
+                            {/* High Accuracy DEMs */}
                             {categorizedDems.high.length > 0 && (
                                 <tr className="bg-gray-100">
                                     <td colSpan={6} className="text-center font-semibold py-2">
@@ -178,7 +179,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                                 </tr>
                             ))}
 
-                            {/* Medium Accuracy (90m) DEMs */}
+                            {/* Medium Accuracy DEMs */}
                             {categorizedDems.medium.length > 0 && (
                                 <tr className="bg-gray-100">
                                     <td colSpan={6} className="text-center font-semibold py-2">
@@ -205,7 +206,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                                 </tr>
                             ))}
 
-                            {/* Low Accuracy (≥500m) DEMs */}
+                            {/* Low Accuracy DEMs */}
                             {categorizedDems.low.length > 0 && (
                                 <tr className="bg-gray-100">
                                     <td colSpan={6} className="text-center font-semibold py-2">
@@ -228,6 +229,33 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                                     <td className="border border-gray-300 px-4 py-2 text-center">{dem.resolution}</td>
                                     <td className="border border-gray-300 px-4 py-2 text-center">Low</td>
                                     <td className="border border-gray-300 px-4 py-2 text-center">Low</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">{dem.source}</td>
+                                </tr>
+                            ))}
+
+                            {/* Very low Accuracy DEMs */}
+                            {categorizedDems.veryLow.length > 0 && (
+                                <tr className="bg-gray-100">
+                                    <td colSpan={6} className="text-center font-semibold py-2">
+                                        Very Low Accuracy (90m)
+                                    </td>
+                                </tr>
+                            )}
+                            {categorizedDems.veryLow.map((dem, index) => (
+                                <tr key={index} className="hover:bg-gray-50">
+                                    <td className="border border-gray-300 px-4 py-2 text-center">
+                                        <input
+                                            type="radio"
+                                            name="selectedDEM"
+                                            value={dem.type}
+                                            checked={selectedDEM === dem.type}
+                                            onChange={() => handleDEMSelection(dem.type)}
+                                        />
+                                    </td>
+                                    <td className="border border-gray-300 px-4 py-2">{dem.description}</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">{dem.resolution}</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">Very Low</td>
+                                    <td className="border border-gray-300 px-4 py-2 text-center">Very Low</td>
                                     <td className="border border-gray-300 px-4 py-2 text-center">{dem.source}</td>
                                 </tr>
                             ))}
