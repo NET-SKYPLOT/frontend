@@ -2,13 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Root: Force Light Mode */
 :root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
 
-    /* Ensure light mode globally */
+    /* Force Light Mode */
     color-scheme: light !important;
     color: #213547 !important;
     background-color: #ffffff !important;
@@ -19,7 +18,6 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Links */
 a {
     font-weight: 500;
     color: #646cff;
@@ -30,7 +28,6 @@ a:hover {
     color: #535bf2;
 }
 
-/* Body: Always Light */
 body {
     margin: 0;
     display: flex;
@@ -41,7 +38,6 @@ body {
     color: #213547 !important;
 }
 
-/* Buttons */
 button {
     border-radius: 8px;
     border: 1px solid transparent;
@@ -49,7 +45,7 @@ button {
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
-    background-color: #f9f9f9; /* Light Theme */
+    background-color: #f9f9f9; /* ✅ Light theme default */
     color: #213547;
     cursor: pointer;
     transition: border-color 0.25s;
@@ -59,45 +55,38 @@ button:hover {
     border-color: #646cff;
 }
 
-/* Navbar & Header: Always Light */
-.navbar, header {
-    background-color: #ffffff !important;
-    color: #213547 !important;
+/* Ensure dark mode doesn't override button styles */
+@media (prefers-color-scheme: dark) {
+    button {
+        background-color: #f9f9f9 !important; /* ✅ Ensures buttons stay light */
+        color: #213547 !important;
+    }
 }
 
-.navbar button, header button {
-    background-color: transparent !important;
-    color: #213547 !important;
-}
 
-/* Navbar Active & Hover Styles */
-.navbar button:hover {
-    background-color: #f3f4f6 !important;
-    color: #1e40af !important;
-}
-
-.navbar button.border-b-2 {
-    background-color: #f3f4f6 !important;
-}
-
-/* Form Elements */
+/* Ensure form elements (input, select, textarea) always stay light */
 input, select, textarea {
     background-color: #ffffff !important;
     color: #213547 !important;
     border: 1px solid #d1d5db;
 }
 
-/* Force Light Mode Even in Dark OS */
+@media (prefers-color-scheme: light) {
+    :root {
+        color: #213547 !important;
+        background-color: #ffffff !important;
+    }
+
+    a:hover {
+        color: #747bff;
+    }
+}
+
+/* Force light mode even if the OS is in dark mode */
 @media (prefers-color-scheme: dark) {
     :root {
         color-scheme: light !important;
         background-color: #ffffff !important;
-        color: #213547 !important;
-    }
-
-    /* Keep Buttons and Forms Light */
-    button {
-        background-color: #f9f9f9 !important;
         color: #213547 !important;
     }
 
@@ -106,20 +95,9 @@ input, select, textarea {
         color: #213547 !important;
         border: 1px solid #d1d5db !important;
     }
-
-    /* Navbar & Header */
-    .navbar, header {
-        background-color: #ffffff !important;
-        color: #213547 !important;
-    }
-
-    .navbar button, header button {
-        background-color: transparent !important;
-        color: #213547 !important;
-    }
 }
 
-/* Custom Date Picker */
+/* Custom CSS */
 .datepicker-popper {
     z-index: 1000 !important;
 }
@@ -128,7 +106,6 @@ input, select, textarea {
     width: 100% !important;
 }
 
-/* Mobile Adjustments */
 @media screen and (max-width: 1024px) {
     body {
         margin-top: 96px;
