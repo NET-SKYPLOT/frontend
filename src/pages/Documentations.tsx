@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 
 const Documentations = () => {
     const [showBackToTop, setShowBackToTop] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -17,10 +18,19 @@ const Documentations = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 1024);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
         <div className="flex h-screen w-screen bg-gray-50">
             <Sidebar/>
-            <main className="flex-1 ml-64 p-6 bg-white shadow-md overflow-y-auto">
+            <main className={`flex-1 ml-64 p-6 bg-white shadow-md overflow-y-auto ${!isMobile ? "ml-64" : ""}`}>
                 <section className="mb-8">
                     <h2 className="text-3xl font-semibold mb-4">How to Use Net-SkyPlot: A Step-by-Step Guide</h2>
                     <p className="leading-relaxed">
