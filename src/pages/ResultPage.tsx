@@ -36,7 +36,7 @@ const ResultPage: React.FC = () => {
                         <p><strong>Application
                             Type:</strong> {requestData.application === "differential_gnss" ? "Multiple Receivers" : "Single Receiver"}
                         </p>
-                        <p><strong>Selected DEM:</strong> {requestData.dem.type} (Source: {requestData.dem.source})</p>
+                        <p><strong>Selected DEM:</strong> {location.state?.formData?.selectedDEM === "no_dem" ? "No DEM selected" : `${requestData.dem.type} (Source: ${requestData.dem.source})`}</p>
                         <h3 className="text-xl font-semibold mt-4">Selected GNSS Constellations</h3>
                         {requestData.constellations.length > 0 ? (
                             <ul className="list-disc ml-6">
