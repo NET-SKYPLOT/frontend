@@ -30,7 +30,7 @@ const Documentations = () => {
     return (
         <div className="flex h-screen w-screen bg-gray-50">
             <Sidebar/>
-            <main className={`flex-1 ml-64 p-6 bg-white shadow-md overflow-y-auto ${!isMobile ? "ml-64" : ""}`}>
+            <main className={`flex-1 p-6 bg-white shadow-md overflow-y-auto ${!isMobile ? "ml-64" : ""}`}>
                 <section className="mb-8">
                     <h2 className="text-3xl font-semibold mb-4">How to Use Net-SkyPlot: A Step-by-Step Guide</h2>
                     <p className="leading-relaxed">
