@@ -107,3 +107,62 @@ input, select, textarea {
         margin-top: 96px;
     }
 }
+
+/* Force light mode for the header */
+header {
+    background-color: #ffffff !important;
+    color: #213547 !important;
+}
+
+/* Ensure text and icons stay visible */
+header a,
+header button {
+    color: #213547 !important;
+}
+
+/* Override dark mode in mobile */
+@media (prefers-color-scheme: dark) {
+    header {
+        background-color: #ffffff !important;
+        color: #213547 !important;
+    }
+
+    header a,
+    header button {
+        color: #213547 !important;
+    }
+}
+
+/* Force navbar and buttons to stay light mode */
+.navbar, .navbar button {
+    background-color: #ffffff !important;
+    color: #213547 !important;
+}
+
+/* Ensure hover effects and active styles remain unchanged */
+.navbar button:hover {
+    background-color: #f3f4f6 !important; /* Light gray hover effect */
+    color: #1e40af !important; /* Darker blue hover text */
+}
+
+.navbar button.border-b-2 {
+    background-color: #f3f4f6 !important; /* Light gray for active tab */
+}
+
+/* Override dark mode settings */
+@media (prefers-color-scheme: dark) {
+    .navbar, .navbar button {
+        background-color: #ffffff !important;
+        color: #213547 !important;
+    }
+
+    .navbar button:hover {
+        background-color: #f3f4f6 !important;
+        color: #1e40af !important;
+    }
+
+    .navbar button.border-b-2 {
+        background-color: #f3f4f6 !important;
+    }
+}
+
