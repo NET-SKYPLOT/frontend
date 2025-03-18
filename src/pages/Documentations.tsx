@@ -54,7 +54,7 @@ const Documentations = () => {
                         </li>
                     </ul>
                     <p className="mt-2 italic">📌 Tip: The default duration is 60 minutes and can be adjusted in
-                        15-minute increments.</p>
+                        60-minute increments.</p>
                 </section>
 
                 <section className="mb-8">
