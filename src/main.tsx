@@ -4,6 +4,8 @@ import "./index.css";
 import App from "./App.tsx";
 import * as React from "react";
 
+document.documentElement.classList.add("light");
+
 class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
     constructor(props: { children: React.ReactNode }) {
         super(props);
