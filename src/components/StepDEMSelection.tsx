@@ -73,7 +73,6 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                     <p className="text-sm text-gray-600">
                         Higher resolution DEMs (≤30m) provide more accuracy but require more computation.
                         Lower resolution DEMs (≥500m) are faster but less detailed.
-                        Very high accuracy DEMs (≤10m) are extremely detailed but very resource-intensive.
                     </p>
 
                     {/* Recommended DEM (if available) */}
