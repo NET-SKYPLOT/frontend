@@ -7,7 +7,7 @@ import SkyPlot from "../components/SkyPlot";
 
 const ResultPage: React.FC = () => {
     const location = useLocation();
-    const requestData = location.state?.requestData;
+    // const requestData = location.state?.requestData;
     const responseData = location.state?.responseData;
 
     const receivers = responseData?.receivers || [];
@@ -134,22 +134,6 @@ const ResultPage: React.FC = () => {
                                 )}
                             </div>
                         )}
-
-                        {/* Display Request Data */}
-                        <div className="p-4 border rounded-md bg-gray-50 mb-6">
-                            <h2 className="text-xl font-semibold">Request Data</h2>
-                            <pre className="p-3 bg-gray-100 rounded-md overflow-x-auto">
-                                {JSON.stringify(requestData, null, 2)}
-                            </pre>
-                        </div>
-
-                        {/* Display API Response */}
-                        <div className="p-4 border rounded-md bg-gray-50">
-                            <h2 className="text-xl font-semibold">API Response</h2>
-                            <pre className="p-3 bg-gray-100 rounded-md overflow-x-auto">
-                                {JSON.stringify(responseData, null, 2)}
-                            </pre>
-                        </div>
                     </>
                 ) : (
                     <p className="text-red-500">No response received.</p>
