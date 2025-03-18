@@ -1,11 +1,21 @@
 import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {MapContainer, TileLayer, Marker} from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import axios from "axios";
 
 interface SummaryStepProps {
     formData: any;
     prevStep: () => void;
 }
+
+const markerIcon = new L.Icon({
+    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+});
 
 const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
     const navigate = useNavigate();
@@ -149,6 +159,29 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                     </>
                 )}
             </div>
+
+            <h3 className="text-xl font-semibold mt-4">Selected Locations</h3>
+
+            {formData.locations.map((loc: any, index: number) => (
+                <p key={index} className="text-gray-700">
+                    📍 <strong>Location {index + 1}:</strong> Lat {loc.lat}, Lon {loc.lon}
+                </p>
+            ))}
+
+            {formData.locations.length > 0 && (
+                <div className="w-full h-64 mt-6">
+                    <MapContainer
+                        center={[formData.locations[0].lat, formData.locations[0].lon]}
+                        zoom={2}
+                        className="w-full h-full rounded-md"
+                    >
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+                        {formData.locations.map((loc: any, index: number) => (
+                            <Marker key={index} position={[loc.lat, loc.lon]} icon={markerIcon}/>
+                        ))}
+                    </MapContainer>
+                </div>
+            )}
 
             {/* Error Message */}
             {error && <p className="text-red-500">{error}</p>}
