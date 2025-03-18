@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import ImageCarousel from "../components/ImageCarousel";
@@ -17,12 +17,22 @@ const tabComponents: { [key: string]: JSX.Element } = {
 
 const Dashboard = () => {
     const [activeTab, setActiveTab] = useState("Introduction");
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 1024);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <div className="flex h-screen w-screen bg-gray-50">
             <Sidebar/>
 
-            <main className="flex-1 ml-64 p-6 bg-white shadow-md overflow-y-auto">
+            <main className={`flex-1 p-6 bg-white shadow-md overflow-y-auto ${!isMobile ? "ml-64" : ""}`}>
                 <div className="p-6 bg-white shadow-md sticky top-0 z-10">
                     <Navbar activeTab={activeTab} setActiveTab={setActiveTab}/>
                 </div>

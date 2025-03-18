@@ -84,3 +84,9 @@ button:focus-visible {
 .react-datepicker-wrapper {
     width: 100% !important;
 }
+
+@media screen and (max-width: 1024px) {
+    body {
+        margin-top: 96px;
+    }
+}

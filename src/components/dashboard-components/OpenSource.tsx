@@ -20,7 +20,7 @@ const OpenSource = () => {
 
             <div className="mt-6 text-center sm:text-left">
                 <a
-                    href="https://github.com/your-repository"
+                    href="https://github.com/NET-SKYPLOT"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition"
