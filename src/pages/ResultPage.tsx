@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {useLocation} from "react-router-dom";
 import {useReactToPrint} from "react-to-print";
 import Sidebar from "../components/Sidebar";
@@ -10,6 +10,7 @@ const ResultPage: React.FC = () => {
     const location = useLocation();
     const requestData = location.state?.requestData;
     const responseData = location.state?.responseData;
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
 
     const receivers = responseData?.receivers || [];
     const firstReceiver = receivers.length > 0 ? receivers[0] : null;
@@ -24,12 +25,21 @@ const ResultPage: React.FC = () => {
         documentTitle: "Planning Results",
     });
 
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 1024);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
         <div className="flex h-screen w-screen bg-gray-50">
             {/* Sidebar */}
             <Sidebar/>
 
-            <main className="flex-1 ml-64 p-6 bg-white shadow-md overflow-y-auto">
+            <main className={`flex-1 p-6 bg-white shadow-md overflow-y-auto ${!isMobile ? "ml-64" : ""}`}>
                 {/* Print Button */}
                 <div className="flex justify-end mb-4">
                     <button
