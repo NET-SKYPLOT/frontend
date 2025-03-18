@@ -9,8 +9,12 @@ interface VisibilityEntry {
     count: number;
 }
 
+interface CommonVisibilityEntry {
+    satellite_count: VisibilityEntry[];
+}
+
 interface VisibilityData {
-    [constellation: string]: VisibilityEntry[];
+    [constellation: string]: VisibilityEntry[] | CommonVisibilityEntry;
 }
 
 interface SatelliteVisibilityProps {
@@ -22,9 +26,17 @@ const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({data}) => {
         return <p className="text-red-500">No satellite visibility data available.</p>;
     }
 
-    // Extract time labels (assume first constellation defines the timestamps)
+    // Determine whether the data follows `visibility` or `common_visibility` format
     const firstConstellation = Object.keys(data)[0];
-    const timeLabels = data[firstConstellation]?.map((entry) => entry.time) || [];
+    const firstEntry = data[firstConstellation];
+
+    // Check if it's an array (original visibility format) or an object with `satellite_count` (common visibility format)
+    const isCommonVisibility = typeof firstEntry === "object" && "satellite_count" in firstEntry;
+
+    // Extract time labels (assume first constellation defines the timestamps)
+    const timeLabels = isCommonVisibility
+        ? (data[firstConstellation] as CommonVisibilityEntry).satellite_count.map((entry) => entry.time)
+        : (data[firstConstellation] as VisibilityEntry[]).map((entry) => entry.time);
 
     // Map colors for different constellations
     const colorMap: Record<string, string> = {
@@ -37,13 +49,19 @@ const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({data}) => {
     // Format data for Chart.js
     const chartData = {
         labels: timeLabels.map((t) => new Date(t).toLocaleTimeString()), // Convert to readable time
-        datasets: Object.keys(data).map((constellation) => ({
-            label: constellation,
-            data: data[constellation].map((entry) => entry.count),
-            backgroundColor: colorMap[constellation] || "gray",
-            borderColor: colorMap[constellation] || "gray",
-            borderWidth: 1,
-        })),
+        datasets: Object.keys(data).map((constellation) => {
+            const entries = isCommonVisibility
+                ? (data[constellation] as CommonVisibilityEntry).satellite_count
+                : (data[constellation] as VisibilityEntry[]);
+
+            return {
+                label: constellation,
+                data: entries.map((entry) => entry.count),
+                backgroundColor: colorMap[constellation] || "gray",
+                borderColor: colorMap[constellation] || "gray",
+                borderWidth: 1,
+            };
+        }),
     };
 
     const options = {
@@ -78,7 +96,9 @@ const SatelliteVisibility: React.FC<SatelliteVisibilityProps> = ({data}) => {
 
     return (
         <div className="p-4 bg-white shadow-md rounded-md mt-6">
-            <h3 className="text-xl font-semibold mb-4">Satellite Visibility</h3>
+            <h3 className="text-xl font-semibold mb-4">
+                {isCommonVisibility ? "Common Satellite Visibility" : "Satellite Visibility"}
+            </h3>
             <div className="h-[400px]">
                 <Bar data={chartData} options={options}/>
             </div>
