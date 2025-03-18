@@ -7,25 +7,13 @@ import SkyPlot from "../components/SkyPlot";
 
 const ResultPage: React.FC = () => {
     const location = useLocation();
-    // const requestData = location.state?.requestData;
+    const requestData = location.state?.requestData;
     const responseData = location.state?.responseData;
 
     const receivers = responseData?.receivers || [];
     const firstReceiver = receivers.length > 0 ? receivers[0] : null;
     const secondReceiver = receivers.length > 1 ? receivers[1] : null;
     const thirdReceiver = receivers.length > 2 ? receivers[2] : null;
-
-    const firstReceiverDopData = firstReceiver?.dop;
-    const firstReceiverVisibilityData = firstReceiver?.visibility;
-    const firstReceiverSkyplotData = firstReceiver?.skyplot_data?.satellites || [];
-
-    const secondReceiverDopData = secondReceiver?.common_dop;
-    const secondReceiverVisibilityData = secondReceiver?.common_visibility;
-    const secondReceiverSkyplotData = secondReceiver?.skyplot_data?.satellites || [];
-
-    const thirdReceiverDopData = thirdReceiver?.common_dop;
-    const thirdReceiverVisibilityData = thirdReceiver?.common_visibility;
-    const thirdReceiverSkyplotData = thirdReceiver?.skyplot_data?.satellites || [];
 
     return (
         <div className="flex h-screen w-screen bg-gray-50">
@@ -37,6 +25,63 @@ const ResultPage: React.FC = () => {
                     Planning Request Results
                 </h1>
 
+                {/* Planning Configuration Summary */}
+                {requestData && (
+                    <div className="p-6 border rounded-md bg-gray-50 mb-8">
+                        <h2 className="text-2xl font-semibold text-blue-700 mb-4">
+                            Planning Configuration
+                        </h2>
+                        <p><strong>Date:</strong> {new Date(requestData.start_datetime).toLocaleDateString()}</p>
+                        <p><strong>Duration:</strong> {requestData.duration_hours * 60} minutes</p>
+                        <p><strong>Application
+                            Type:</strong> {requestData.application === "differential_gnss" ? "Multiple Receivers" : "Single Receiver"}
+                        </p>
+                        <p><strong>Selected DEM:</strong> {requestData.dem.type} (Source: {requestData.dem.source})</p>
+                        <h3 className="text-xl font-semibold mt-4">Selected GNSS Constellations</h3>
+                        {requestData.constellations.length > 0 ? (
+                            <ul className="list-disc ml-6">
+                                {requestData.constellations.map((constellation: string) => (
+                                    <li key={constellation}>{constellation}</li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-gray-500">No constellations selected.</p>
+                        )}
+
+                        {/* Receivers Information */}
+                        <h3 className="text-xl font-semibold mt-6">Receivers Information</h3>
+                        {requestData.receivers.map((receiver: any, rIndex: number) => (
+                            <div key={receiver.id} className="p-4 border-b last:border-none">
+                                <h4 className="text-lg font-semibold mb-2">Receiver {rIndex + 1}</h4>
+                                <p><strong>ID:</strong> {receiver.id}</p>
+                                <p><strong>Role:</strong> {receiver.role.toUpperCase()}</p>
+                                <p><strong>Location:</strong> Lat {receiver.coordinates.latitude},
+                                    Lon {receiver.coordinates.longitude}</p>
+                                <p><strong>Height from Ground:</strong> {receiver.coordinates.height} meters</p>
+                                {receiver.obstacles.length > 0 && (
+                                    <div className="mt-2">
+                                        <h5 className="text-md font-semibold">Obstacles:</h5>
+                                        {receiver.obstacles.map((obstacle: any, oIndex: number) => (
+                                            <div key={oIndex} className="pl-4 border-l-2 border-gray-400 mt-1">
+                                                <p>
+                                                    <strong>Obstacle {oIndex + 1} Height:</strong> {obstacle.height} meters
+                                                </p>
+                                                <p><strong>Vertices:</strong></p>
+                                                <ul className="list-disc ml-6">
+                                                    {obstacle.vertices.map((vertex: any, vIndex: number) => (
+                                                        <li key={vIndex}>Lat {vertex.latitude},
+                                                            Lon {vertex.longitude}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 {responseData ? (
                     <>
                         {/* First Receiver Plots */}
@@ -45,29 +90,9 @@ const ResultPage: React.FC = () => {
                                 <h2 className="text-2xl font-semibold text-blue-700 mb-4">
                                     Receiver 1 - ID: {firstReceiver.id} - Role: {firstReceiver.role.toUpperCase()}
                                 </h2>
-                                {firstReceiverDopData ? (
-                                    <div className="mb-6">
-                                        <DOPPlot data={firstReceiverDopData}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No DOP data available.</p>
-                                )}
-
-                                {firstReceiverVisibilityData ? (
-                                    <div className="mb-6">
-                                        <SatelliteVisibility data={firstReceiverVisibilityData}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No satellite visibility data available.</p>
-                                )}
-
-                                {firstReceiverSkyplotData.length > 0 ? (
-                                    <div className="mb-6">
-                                        <SkyPlot responseData={firstReceiverSkyplotData}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Skyplot data available.</p>
-                                )}
+                                <DOPPlot data={firstReceiver.dop}/>
+                                <SatelliteVisibility data={firstReceiver.visibility}/>
+                                <SkyPlot responseData={firstReceiver.skyplot_data?.satellites || []}/>
                             </div>
                         )}
 
@@ -77,29 +102,9 @@ const ResultPage: React.FC = () => {
                                 <h2 className="text-2xl font-semibold text-green-700 mb-4">
                                     Receiver 2 - ID: {secondReceiver.id} - Role: {secondReceiver.role.toUpperCase()}
                                 </h2>
-                                {secondReceiverDopData ? (
-                                    <div className="mb-6">
-                                        <DOPPlot data={secondReceiverDopData}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Common DOP data available.</p>
-                                )}
-
-                                {secondReceiverVisibilityData ? (
-                                    <div className="mb-6">
-                                        <SatelliteVisibility data={secondReceiverVisibilityData}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No satellite visibility data available.</p>
-                                )}
-
-                                {secondReceiverSkyplotData.length > 0 ? (
-                                    <div className="mb-6">
-                                        <SkyPlot responseData={secondReceiverSkyplotData}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Skyplot data available.</p>
-                                )}
+                                <DOPPlot data={secondReceiver.common_dop}/>
+                                <SatelliteVisibility data={secondReceiver.common_visibility}/>
+                                <SkyPlot responseData={secondReceiver.skyplot_data?.satellites || []}/>
                             </div>
                         )}
 
@@ -109,29 +114,9 @@ const ResultPage: React.FC = () => {
                                 <h2 className="text-2xl font-semibold text-purple-700 mb-4">
                                     Receiver 3 - ID: {thirdReceiver.id} - Role: {thirdReceiver.role.toUpperCase()}
                                 </h2>
-                                {thirdReceiverDopData ? (
-                                    <div className="mb-6">
-                                        <DOPPlot data={thirdReceiverDopData}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Common DOP data available.</p>
-                                )}
-
-                                {thirdReceiverVisibilityData ? (
-                                    <div className="mb-6">
-                                        <SatelliteVisibility data={thirdReceiverVisibilityData}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No satellite visibility data available.</p>
-                                )}
-
-                                {thirdReceiverSkyplotData.length > 0 ? (
-                                    <div className="mb-6">
-                                        <SkyPlot responseData={thirdReceiverSkyplotData}/>
-                                    </div>
-                                ) : (
-                                    <p className="text-red-500">No Skyplot data available.</p>
-                                )}
+                                <DOPPlot data={thirdReceiver.common_dop}/>
+                                <SatelliteVisibility data={thirdReceiver.common_visibility}/>
+                                <SkyPlot responseData={thirdReceiver.skyplot_data?.satellites || []}/>
                             </div>
                         )}
                     </>
