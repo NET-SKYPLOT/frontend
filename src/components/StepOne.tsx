@@ -1,3 +1,4 @@
+import {useEffect} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TimezoneSelect from "react-timezone-select";
@@ -10,10 +11,21 @@ interface StepOneProps {
 }
 
 const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
+    // Ensure UTC is set as the default timezone if it's missing
+    useEffect(() => {
+        if (!formData.timezone || !formData.timezone.value) {
+            setFormData((prev: any) => ({
+                ...prev,
+                timezone: {value: "UTC", label: "Coordinated Universal Time (UTC)"},
+            }));
+        }
+    }, []);
+
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-semibold">Step 1: Select Planning Details</h2>
 
+            {/* Date Selection */}
             <div>
                 <label className="block text-lg font-medium">Select Date:</label>
                 <DatePicker
@@ -23,6 +35,7 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                 />
             </div>
 
+            {/* Time Selection */}
             <div>
                 <label className="block text-lg font-medium">Select Time:</label>
                 <DatePicker
@@ -37,6 +50,7 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                 />
             </div>
 
+            {/* Duration Selection */}
             <div>
                 <label className="block text-lg font-medium">
                     Duration (minutes){" "}
@@ -59,20 +73,17 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                 />
             </div>
 
+            {/* Timezone Selection */}
             <div>
                 <label className="block text-lg font-medium">Select Timezone:</label>
                 <TimezoneSelect
-                    value={formData.timezone?.value ? formData.timezone : { value: "UTC", label: "Coordinated Universal Time (UTC)" }}
-                    onChange={(timezone) => {
-                        if (!timezone.value) {
-                            timezone = { value: "UTC", label: "Coordinated Universal Time (UTC)" };
-                        }
-                        setFormData({...formData, timezone});
-                    }}
+                    value={formData.timezone || {value: "UTC", label: "Coordinated Universal Time (UTC)"}}
+                    onChange={(timezone) => setFormData({...formData, timezone})}
                     className="w-full"
                 />
             </div>
 
+            {/* Next Step Button */}
             <button
                 onClick={nextStep}
                 className="bg-blue-500 text-white px-6 py-2 rounded w-full mt-4 hover:bg-blue-600"
