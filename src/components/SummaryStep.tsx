@@ -19,6 +19,8 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         source: "unknown"
     };
 
+    console.log(formData);
+
     const demSource = selectedDem.source === "Piemote Geoportale" ? "pgp" : "ot";
 
     const handleSubmit = async () => {
