@@ -129,7 +129,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                             {categorizedDems.veryHigh.length > 0 && (
                                 <tr className="bg-gray-100">
                                     <td colSpan={6} className="text-center font-semibold py-2">
-                                        Very High Accuracy (≤10m)
+                                        Very High Accuracy
                                     </td>
                                 </tr>
                             )}
@@ -156,7 +156,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                             {categorizedDems.high.length > 0 && (
                                 <tr className="bg-gray-100">
                                     <td colSpan={6} className="text-center font-semibold py-2">
-                                        High Accuracy (≤30m)
+                                        High Accuracy
                                     </td>
                                 </tr>
                             )}
@@ -183,7 +183,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                             {categorizedDems.medium.length > 0 && (
                                 <tr className="bg-gray-100">
                                     <td colSpan={6} className="text-center font-semibold py-2">
-                                        Medium Accuracy (90m)
+                                        Medium Accuracy
                                     </td>
                                 </tr>
                             )}
@@ -210,7 +210,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                             {categorizedDems.low.length > 0 && (
                                 <tr className="bg-gray-100">
                                     <td colSpan={6} className="text-center font-semibold py-2">
-                                        Low Accuracy (≥500m)
+                                        Low Accuracy
                                     </td>
                                 </tr>
                             )}
@@ -237,7 +237,7 @@ const StepDEMSelection: React.FC<StepDEMSelectionProps> = ({formData, setFormDat
                             {categorizedDems.veryLow.length > 0 && (
                                 <tr className="bg-gray-100">
                                     <td colSpan={6} className="text-center font-semibold py-2">
-                                        Very Low Accuracy (90m)
+                                        Very Low Accuracy
                                     </td>
                                 </tr>
                             )}
