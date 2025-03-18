@@ -62,11 +62,13 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
             <div>
                 <label className="block text-lg font-medium">Select Timezone:</label>
                 <TimezoneSelect
-                    value={formData.timezone || {
-                        value: "UTC",
-                        label: "Coordinated Universal Time (UTC)"
+                    value={formData.timezone?.value ? formData.timezone : { value: "UTC", label: "Coordinated Universal Time (UTC)" }}
+                    onChange={(timezone) => {
+                        if (!timezone.value) {
+                            timezone = { value: "UTC", label: "Coordinated Universal Time (UTC)" };
+                        }
+                        setFormData({...formData, timezone});
                     }}
-                    onChange={(timezone) => setFormData({...formData, timezone})}
                     className="w-full"
                 />
             </div>
