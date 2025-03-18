@@ -17,34 +17,19 @@ interface Satellite {
     trajectory: SatelliteTrajectory[];
 }
 
-interface Receiver {
-    skyplot_data?: {
-        satellites: Satellite[];
-    };
-}
-
-interface ResponseData {
-    receivers?: Receiver[];
-}
-
 interface SkyPlotProps {
-    responseData: ResponseData;
+    responseData: Satellite[]; // Directly receives `satellites` array from `ResultPage.tsx`
 }
 
 const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
-    if (!responseData || !responseData.receivers || responseData.receivers.length === 0) {
-        return <p className="text-red-500">No Skyplot data available.</p>;
-    }
-
-    const skyplotData = responseData.receivers[0]?.skyplot_data?.satellites;
-    if (!skyplotData || skyplotData.length === 0) {
+    if (!responseData || responseData.length === 0) {
         return <p className="text-red-500">No satellites found in Skyplot data.</p>;
     }
 
-    // Extract unique timestamps
+    // Extract unique timestamps from all satellite trajectories
     const timestamps = Array.from(
         new Set(
-            skyplotData.flatMap((satellite) =>
+            responseData.flatMap((satellite) =>
                 satellite.trajectory.map((point) => point.time)
             )
         )
@@ -63,7 +48,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
     };
 
     // Filter satellites for selected time
-    const filteredSatellites = skyplotData
+    const filteredSatellites = responseData
         .map((satellite) => {
             const trajectoryPoint = satellite.trajectory.find(
                 (point) => point.time === selectedTime
