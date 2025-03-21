@@ -13,9 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H 167.172.173.179 >> ~/.ssh/known_hosts
+
       - name: SSH and Deploy
-        run:
-          ssh root@167.172.173.179 "
+        run: |
+          ssh -i ~/.ssh/id_ed25519 root@167.172.173.179 "
             cd /netskyplot/frontend &&
             git pull &&
             cd .. &&
