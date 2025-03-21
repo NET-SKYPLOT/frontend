@@ -99,7 +99,6 @@ const OurTeam = () => {
                                className="mt-4 text-lg font-semibold text-blue-600 hover:underline">
                                 {member.name}
                             </a>
-                            {/*<h4 className="mt-3 text-lg font-medium">{member.name}</h4>*/}
                         </div>
                     ))}
                 </div>
