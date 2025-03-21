@@ -21,11 +21,31 @@ const tutors = [
 ];
 
 const teamMembers = [
-    {name: "Elahe Fallahi", image: "/assets/img/team-members/fallahi.png"},
-    {name: "Saeed Amiri", image: "/assets/img/team-members/amiri.png"},
-    {name: "Mohammadreza Taheri", image: "/assets/img/team-members/taheri.png"},
-    {name: "Lena Kazemahvazi", image: "/assets/img/team-members/kazemahvazi.png"},
-    {name: "Arezou Shadkam", image: "/assets/img/team-members/shadkam.png"},
+    {
+        name: "Elahe Fallahi",
+        image: "/assets/img/team-members/fallahi.png",
+        linkdin: "https://www.linkedin.com/in/elahe-fallahi-005531158/"
+    },
+    {
+        name: "Saeed Amiri",
+        image: "/assets/img/team-members/amiri.png",
+        linkdin: "https://www.linkedin.com/in/saeed-am/"
+    },
+    {
+        name: "Reza Taheri",
+        image: "/assets/img/team-members/taheri.png",
+        linkdin: "https://www.linkedin.com/in/rezathriii/"
+    },
+    {
+        name: "Lena Kazemahvazi",
+        image: "/assets/img/team-members/kazemahvazi.png",
+        linkdin: "https://www.linkedin.com/in/lenaahvazi/"
+    },
+    {
+        name: "Arezou Shadkam",
+        image: "/assets/img/team-members/shadkam.png",
+        linkdin: "https://www.linkedin.com/in/contact-arezou-shadkam/"
+    },
 ];
 
 const OurTeam = () => {
@@ -75,7 +95,11 @@ const OurTeam = () => {
                                 alt={member.name}
                                 className="w-32 h-32 sm:w-36 sm:h-36 object-cover rounded-full shadow-md"
                             />
-                            <h4 className="mt-3 text-lg font-medium">{member.name}</h4>
+                            <a href={member.linkdin} target="_blank" rel="noopener noreferrer"
+                               className="mt-4 text-lg font-semibold text-blue-600 hover:underline">
+                                {member.name}
+                            </a>
+                            {/*<h4 className="mt-3 text-lg font-medium">{member.name}</h4>*/}
                         </div>
                     ))}
                 </div>
