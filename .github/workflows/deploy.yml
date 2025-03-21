@@ -1,4 +1,4 @@
-name: Auto Deplot to the Server
+name: Auto Deploy to the Server
 
 on:
   push:
