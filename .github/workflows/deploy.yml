@@ -1,0 +1,24 @@
+name: Auto Deplot to the Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu_latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: SSH and Deploy
+        run:
+          ssh root@167.172.173.179 "
+            cd /netskyplot/frontend &&
+            git pull &&
+            cd .. &&
+            docker compose down &&
+            docker compose up -d --build --remove-orphans
+          "
