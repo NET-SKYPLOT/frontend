@@ -1,8 +1,14 @@
 import React, {useState} from "react";
-import {PolarArea} from "react-chartjs-2";
-import {Chart, RadialLinearScale, PointElement, Legend, Tooltip} from "chart.js";
+import {
+    Chart as ChartJS,
+    RadialLinearScale,
+    PointElement,
+    Legend,
+    Tooltip,
+} from "chart.js";
+import {Scatter} from "react-chartjs-2";
 
-Chart.register(RadialLinearScale, PointElement, Legend, Tooltip);
+ChartJS.register(RadialLinearScale, PointElement, Legend, Tooltip);
 
 interface SatelliteTrajectory {
     azimuth: number;
@@ -18,7 +24,7 @@ interface Satellite {
 }
 
 interface SkyPlotProps {
-    responseData: Satellite[]; // Directly receives `satellites` array from `ResultPage.tsx`
+    responseData: Satellite[];
 }
 
 const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
@@ -26,7 +32,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         return <p className="text-red-500">No satellites found in Skyplot data.</p>;
     }
 
-    // Extract unique timestamps from all satellite trajectories
+    // Extract unique timestamps
     const timestamps = Array.from(
         new Set(
             responseData.flatMap((satellite) =>
@@ -35,11 +41,11 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         )
     ).sort();
 
-    // State for selected time
+    // Selected time state
     const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
     const selectedTime = timestamps[selectedTimeIndex];
 
-    // Color mapping for different satellite constellations
+    // Constellation color map
     const colorMap: Record<string, string> = {
         GPS: "blue",
         GLONASS: "red",
@@ -47,64 +53,84 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         BEIDOU: "orange",
     };
 
-    // Filter satellites for selected time
-    const filteredSatellites = responseData
-        .map((satellite) => {
-            const trajectoryPoint = satellite.trajectory.find(
-                (point) => point.time === selectedTime
-            );
-            return trajectoryPoint
-                ? {
-                    satellite,
-                    point: trajectoryPoint,
-                }
-                : null;
-        })
-        .filter(Boolean) as { satellite: Satellite; point: SatelliteTrajectory }[];
+    const uniqueConstellations = Array.from(
+        new Set(responseData.map((sat) => sat.constellation))
+    );
 
-    // Prepare data for Chart.js (PolarArea)
-    const chartData = {
-        labels: filteredSatellites.map(
-            ({satellite}) => `${satellite.constellation} - ${satellite.satellite_id}`
-        ),
-        datasets: [
-            {
-                label: "Satellite Positions",
-                data: filteredSatellites.map(({point}) => 90 - point.elevation), // Elevation (closer to center = higher)
-                backgroundColor: filteredSatellites.map(
-                    ({satellite, point}) =>
-                        point.visible ? colorMap[satellite.constellation] || "gray" : "gray"
-                ),
-                borderColor: "black",
-                borderWidth: 1,
-            },
-        ],
+    const [visibleConstellations, setVisibleConstellations] = useState<Record<string, boolean>>(
+        uniqueConstellations.reduce((acc, type) => {
+            acc[type] = true;
+            return acc;
+        }, {} as Record<string, boolean>)
+    );
+
+    const handleToggle = (constellation: string) => {
+        setVisibleConstellations(prev => ({
+            ...prev,
+            [constellation]: !prev[constellation]
+        }));
     };
 
-    const options = {
+    // Filter satellites based on selected time and visible constellations
+    const filteredPoints = responseData
+        .filter((sat) => visibleConstellations[sat.constellation])
+        .map((sat) => {
+            const point = sat.trajectory.find(p => p.time === selectedTime);
+            return point ? {
+                label: `${sat.constellation} - ${sat.satellite_id}`,
+                data: [{
+                    r: 90 - point.elevation,  // radius (elevation from center)
+                    theta: point.azimuth,     // angle (azimuth)
+                }],
+                backgroundColor: point.visible ? colorMap[sat.constellation] || "gray" : "gray",
+                pointRadius: 5,
+            } : null;
+        })
+        .filter(Boolean) as any[];
+
+    const chartData = {
+        datasets: filteredPoints,
+    };
+
+    const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: {
-            legend: {
-                position: "top" as const,
-                labels: {
-                    boxWidth: 15,
-                    padding: 10,
-                    font: {size: 12},
-                },
-            },
-            tooltip: {
-                mode: "index" as const,
-                intersect: false,
-            },
-        },
         scales: {
             r: {
+                angleLines: {display: true},
+                grid: {
+                    color: "rgba(200,200,200,0.2)",
+                },
                 min: 0,
                 max: 90,
-                reverse: true, // Ensure that lower elevation is at the center
-                title: {display: true, text: "Elevation (°)"},
-                grid: {color: "rgba(200, 200, 200, 0.3)"},
+                reverse: true,
+                ticks: {
+                    stepSize: 10,
+                    callback: (tickValue: string | number) => {
+                        const num = typeof tickValue === "number" ? tickValue : parseFloat(tickValue);
+                        return `${90 - num}°`;
+                    },
+                },
+                pointLabels: {
+                    display: true,
+                    centerPointLabels: true,
+                    font: {size: 14},
+                },
+            },
+        },
+        plugins: {
+            legend: {
+                display: false,
+            },
+            tooltip: {
+                callbacks: {
+                    label: (context: any) => {
+                        const label = context.dataset.label || "";
+                        const r = context.raw.r;
+                        const theta = context.raw.theta;
+                        return `${label}: Elev ${90 - r}°, Azim ${theta}°`;
+                    },
+                },
             },
         },
     };
@@ -113,9 +139,24 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         <div className="p-6 bg-white shadow-md rounded-md mt-6">
             <h3 className="text-xl font-semibold mb-4">SkyPlot</h3>
 
-            {/* Skyplot Chart */}
+            {/* Constellation Toggle Filters */}
+            <div className="mb-4 flex flex-wrap gap-4">
+                {uniqueConstellations.map((type) => (
+                    <label key={type} className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={visibleConstellations[type]}
+                            onChange={() => handleToggle(type)}
+                            className="cursor-pointer"
+                        />
+                        <span className="text-sm font-medium text-gray-700">{type}</span>
+                    </label>
+                ))}
+            </div>
+
+            {/* Chart */}
             <div className="h-[600px] w-[600px] mx-auto">
-                <PolarArea data={chartData} options={options}/>
+                <Scatter data={chartData} options={chartOptions}/>
             </div>
 
             {/* Time Slider */}
