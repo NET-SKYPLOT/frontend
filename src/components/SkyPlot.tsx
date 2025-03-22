@@ -1,14 +1,15 @@
 import React, {useState} from "react";
 import {
     Chart as ChartJS,
-    RadialLinearScale,
+    LinearScale,
     PointElement,
     Legend,
     Tooltip,
 } from "chart.js";
+import annotationPlugin from "chartjs-plugin-annotation";
 import {Scatter} from "react-chartjs-2";
 
-ChartJS.register(RadialLinearScale, PointElement, Legend, Tooltip);
+ChartJS.register(LinearScale, PointElement, Legend, Tooltip, annotationPlugin);
 
 interface SatelliteTrajectory {
     azimuth: number;
@@ -32,7 +33,6 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         return <p className="text-red-500">No satellites found in Skyplot data.</p>;
     }
 
-    // Extract unique timestamps
     const timestamps = Array.from(
         new Set(
             responseData.flatMap((satellite) =>
@@ -41,11 +41,9 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         )
     ).sort();
 
-    // Selected time state
     const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
     const selectedTime = timestamps[selectedTimeIndex];
 
-    // Constellation color map
     const colorMap: Record<string, string> = {
         GPS: "blue",
         GLONASS: "red",
@@ -65,9 +63,9 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
     );
 
     const handleToggle = (constellation: string) => {
-        setVisibleConstellations(prev => ({
+        setVisibleConstellations((prev) => ({
             ...prev,
-            [constellation]: !prev[constellation]
+            [constellation]: !prev[constellation],
         }));
     };
 
@@ -75,7 +73,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
     const filteredPoints = responseData
         .filter((sat) => visibleConstellations[sat.constellation])
         .map((sat) => {
-            const point = sat.trajectory.find(p => p.time === selectedTime);
+            const point = sat.trajectory.find((p) => p.time === selectedTime);
             if (!point) return null;
 
             const radius = 90 - point.elevation;
@@ -83,10 +81,12 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
 
             return {
                 label: `${sat.constellation} - ${sat.satellite_id}`,
-                data: [{
-                    x: radius * Math.sin(angleRad),
-                    y: radius * Math.cos(angleRad),
-                }],
+                data: [
+                    {
+                        x: radius * Math.sin(angleRad),
+                        y: radius * Math.cos(angleRad),
+                    },
+                ],
                 backgroundColor: point.visible ? colorMap[sat.constellation] || "gray" : "gray",
                 pointRadius: 5,
             };
@@ -102,24 +102,22 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         maintainAspectRatio: false,
         scales: {
             x: {
-                type: "linear" as const, // ✅ Fixed
+                type: "linear" as const,
                 min: -90,
                 max: 90,
-                title: {
-                    display: true,
-                    text: "Azimuth (X)",
+                ticks: {
+                    stepSize: 30,
                 },
                 grid: {
                     color: "rgba(200,200,200,0.2)",
                 },
             },
             y: {
-                type: "linear" as const, // ✅ Fixed
+                type: "linear" as const,
                 min: -90,
                 max: 90,
-                title: {
-                    display: true,
-                    text: "Elevation (Y)",
+                ticks: {
+                    stepSize: 30,
                 },
                 grid: {
                     color: "rgba(200,200,200,0.2)",
@@ -140,6 +138,124 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                     },
                 },
             },
+            annotation: {
+                annotations: {
+                    // === Rings ===
+                    ring1: {
+                        type: "ellipse" as const,
+                        xMin: -30,
+                        xMax: 30,
+                        yMin: -30,
+                        yMax: 30,
+                        borderColor: "rgba(150,150,150,0.3)",
+                        borderWidth: 1,
+                    },
+                    ring2: {
+                        type: "ellipse" as const,
+                        xMin: -60,
+                        xMax: 60,
+                        yMin: -60,
+                        yMax: 60,
+                        borderColor: "rgba(150,150,150,0.3)",
+                        borderWidth: 1,
+                    },
+                    ring3: {
+                        type: "ellipse" as const,
+                        xMin: -90,
+                        xMax: 90,
+                        yMin: -90,
+                        yMax: 90,
+                        borderColor: "rgba(150,150,150,0.4)",
+                        borderWidth: 1,
+                    },
+
+                    // === Axis lines ===
+                    axisX: {
+                        type: "line" as const,
+                        xMin: -90,
+                        xMax: 90,
+                        yMin: 0,
+                        yMax: 0,
+                        borderColor: "gray",
+                        borderWidth: 0.8,
+                    },
+                    axisY: {
+                        type: "line" as const,
+                        xMin: 0,
+                        xMax: 0,
+                        yMin: -90,
+                        yMax: 90,
+                        borderColor: "gray",
+                        borderWidth: 0.8,
+                    },
+
+                    // === Azimuth Labels ===
+                    labelN: {
+                        type: "label" as const,
+                        xValue: 0,
+                        yValue: 90,
+                        content: ["N"],
+                        position: "center" as const,
+                        font: {size: 14, weight: "bolder"} as const,
+                        color: "black",
+                    },
+                    labelE: {
+                        type: "label" as const,
+                        xValue: 90,
+                        yValue: 0,
+                        content: ["E"],
+                        position: "center" as const,
+                        font: {size: 14, weight: "bolder"} as const,
+                        color: "black",
+                    },
+                    labelS: {
+                        type: "label" as const,
+                        xValue: 0,
+                        yValue: -90,
+                        content: ["S"],
+                        position: "center" as const,
+                        font: {size: 14, weight: "bolder"} as const,
+                        color: "black",
+                    },
+                    labelW: {
+                        type: "label" as const,
+                        xValue: -90,
+                        yValue: 0,
+                        content: ["W"],
+                        position: "center" as const,
+                        font: {size: 14, weight: "bolder"} as const,
+                        color: "black",
+                    },
+                    // === Elevation Ring Labels ===
+                    labelElv30: {
+                        type: "label" as const,
+                        xValue: 30, // Right edge of ring3 (90 - 30 = 60)
+                        yValue: 0,
+                        content: ["30°"],
+                        position: "center" as const,
+                        font: {size: 12},
+                        color: "gray",
+                    },
+                    labelElv60: {
+                        type: "label" as const,
+                        xValue: 60, // Right edge of ring2 (90 - 60 = 30)
+                        yValue: 0,
+                        content: ["60°"],
+                        position: "center" as const,
+                        font: {size: 12},
+                        color: "gray",
+                    },
+                    labelElv90: {
+                        type: "label" as const,
+                        xValue: 0,
+                        yValue: 0,
+                        content: ["90°"],
+                        position: "center" as const,
+                        font: {size: 12},
+                        color: "gray",
+                    },
+                },
+            },
         },
     };
 
@@ -147,7 +263,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         <div className="p-6 bg-white shadow-md rounded-md mt-6">
             <h3 className="text-xl font-semibold mb-4">SkyPlot</h3>
 
-            {/* Constellation Toggle Filters */}
+            {/* Constellation Toggles */}
             <div className="mb-4 flex flex-wrap gap-4">
                 {uniqueConstellations.map((type) => (
                     <label key={type} className="flex items-center space-x-2">
@@ -174,7 +290,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                 </label>
                 <input
                     type="range"
-                    min="0"
+                    min={0}
                     max={timestamps.length - 1}
                     value={selectedTimeIndex}
                     onChange={(e) => setSelectedTimeIndex(Number(e.target.value))}
