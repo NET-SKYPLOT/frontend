@@ -1,4 +1,5 @@
 name: Auto Deploy to the Server
+run-name: ${{ github.actor }} is deploying 🚀
 
 on:
   push:
@@ -20,9 +21,14 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 167.172.173.179 >> ~/.ssh/known_hosts
 
+      - name: Test SSH Connection
+        run: |
+          ssh -v -i ~/.ssh/id_ed25519 root@167.172.173.179 "echo '✅ SSH Connection successful!'"
+
       - name: SSH and Deploy
         run: |
           ssh -i ~/.ssh/id_ed25519 root@167.172.173.179 "
+            set -e
             cd /netskyplot/frontend &&
             git pull &&
             cd .. &&
