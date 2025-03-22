@@ -76,15 +76,20 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         .filter((sat) => visibleConstellations[sat.constellation])
         .map((sat) => {
             const point = sat.trajectory.find(p => p.time === selectedTime);
-            return point ? {
+            if (!point) return null;
+
+            const radius = 90 - point.elevation;
+            const angleRad = (point.azimuth * Math.PI) / 180;
+
+            return {
                 label: `${sat.constellation} - ${sat.satellite_id}`,
                 data: [{
-                    r: 90 - point.elevation,  // radius (elevation from center)
-                    theta: point.azimuth,     // angle (azimuth)
+                    x: radius * Math.sin(angleRad),
+                    y: radius * Math.cos(angleRad),
                 }],
                 backgroundColor: point.visible ? colorMap[sat.constellation] || "gray" : "gray",
                 pointRadius: 5,
-            } : null;
+            };
         })
         .filter(Boolean) as any[];
 
@@ -96,25 +101,28 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-            r: {
-                angleLines: {display: true},
+            x: {
+                type: "linear" as const, // ✅ Fixed
+                min: -90,
+                max: 90,
+                title: {
+                    display: true,
+                    text: "Azimuth (X)",
+                },
                 grid: {
                     color: "rgba(200,200,200,0.2)",
                 },
-                min: 0,
+            },
+            y: {
+                type: "linear" as const, // ✅ Fixed
+                min: -90,
                 max: 90,
-                reverse: true,
-                ticks: {
-                    stepSize: 10,
-                    callback: (tickValue: string | number) => {
-                        const num = typeof tickValue === "number" ? tickValue : parseFloat(tickValue);
-                        return `${90 - num}°`;
-                    },
-                },
-                pointLabels: {
+                title: {
                     display: true,
-                    centerPointLabels: true,
-                    font: {size: 14},
+                    text: "Elevation (Y)",
+                },
+                grid: {
+                    color: "rgba(200,200,200,0.2)",
                 },
             },
         },
@@ -126,9 +134,9 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                 callbacks: {
                     label: (context: any) => {
                         const label = context.dataset.label || "";
-                        const r = context.raw.r;
-                        const theta = context.raw.theta;
-                        return `${label}: Elev ${90 - r}°, Azim ${theta}°`;
+                        const x = context.raw.x;
+                        const y = context.raw.y;
+                        return `${label}: x=${x.toFixed(2)}, y=${y.toFixed(2)}`;
                     },
                 },
             },
