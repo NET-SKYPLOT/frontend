@@ -37,16 +37,6 @@ const ElevationPlot: React.FC<ElevationPlotProps> = ({responseData}) => {
         return <p className="text-red-500">No satellites found in elevation data.</p>;
     }
 
-    // Extract all timestamps and sort
-    const allTimestamps = Array.from(
-        new Set(
-            responseData.flatMap((sat) => sat.trajectory.map((t) => t.time))
-        )
-    ).sort();
-
-    const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
-    const selectedTime = allTimestamps[selectedTimeIndex];
-
     // Color map
     const colorMap: Record<string, string> = {
         GPS: "blue",
@@ -55,25 +45,43 @@ const ElevationPlot: React.FC<ElevationPlotProps> = ({responseData}) => {
         BEIDOU: "orange",
     };
 
-    // Prepare chart data (elevation over time per satellite)
-    const datasets = responseData.map((satellite) => {
-        const data = satellite.trajectory.map((t) => ({
-            x: t.time,
-            y: t.elevation,
+    // Initial constellation filter state
+    const uniqueConstellations = Array.from(new Set(responseData.map(sat => sat.constellation)));
+    const [visibleConstellations, setVisibleConstellations] = useState<Record<string, boolean>>(
+        uniqueConstellations.reduce((acc, type) => {
+            acc[type] = true;
+            return acc;
+        }, {} as Record<string, boolean>)
+    );
+
+    const handleToggle = (constellation: string) => {
+        setVisibleConstellations(prev => ({
+            ...prev,
+            [constellation]: !prev[constellation]
         }));
+    };
 
-        const color = colorMap[satellite.constellation] || "gray";
+    // Prepare filtered datasets
+    const datasets = responseData
+        .filter(sat => visibleConstellations[sat.constellation])
+        .map((satellite) => {
+            const data = satellite.trajectory.map((t) => ({
+                x: t.time,
+                y: t.elevation,
+            }));
 
-        return {
-            label: `${satellite.constellation} - ${satellite.satellite_id}`,
-            data,
-            fill: false,
-            borderColor: color,
-            backgroundColor: color,
-            tension: 0.2,
-            pointRadius: 3,
-        };
-    });
+            const color = colorMap[satellite.constellation] || "gray";
+
+            return {
+                label: `${satellite.constellation} - ${satellite.satellite_id}`,
+                data,
+                fill: false,
+                borderColor: color,
+                backgroundColor: color,
+                tension: 0.2,
+                pointRadius: 3,
+            };
+        });
 
     const chartData = {
         datasets,
@@ -114,28 +122,24 @@ const ElevationPlot: React.FC<ElevationPlotProps> = ({responseData}) => {
         <div className="p-6 bg-white shadow-md rounded-md mt-6">
             <h3 className="text-xl font-semibold mb-4">Elevation Plot</h3>
 
-            {/* Elevation Line Chart */}
-            <div className="h-[800px] w-full">
-                <Line data={chartData} options={chartOptions}/>
+            {/* Constellation Type Filters */}
+            <div className="mb-4 flex flex-wrap gap-4">
+                {uniqueConstellations.map((type) => (
+                    <label key={type} className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={visibleConstellations[type]}
+                            onChange={() => handleToggle(type)}
+                            className="cursor-pointer"
+                        />
+                        <span className="text-sm font-medium text-gray-700">{type}</span>
+                    </label>
+                ))}
             </div>
 
-            {/* Time Slider */}
-            <div className="mt-6 flex flex-col items-center">
-                <label className="font-semibold mb-2">
-                    Selected Time: {new Date(selectedTime).toLocaleTimeString()}
-                </label>
-                <input
-                    type="range"
-                    min={0}
-                    max={allTimestamps.length - 1}
-                    value={selectedTimeIndex}
-                    onChange={(e) => setSelectedTimeIndex(Number(e.target.value))}
-                    className="w-full cursor-pointer"
-                />
-                <div className="flex justify-between w-full text-sm text-gray-500 mt-2">
-                    <span>{new Date(allTimestamps[0]).toLocaleTimeString()}</span>
-                    <span>{new Date(allTimestamps[allTimestamps.length - 1]).toLocaleTimeString()}</span>
-                </div>
+            {/* Chart */}
+            <div className="h-[800px] w-full">
+                <Line data={chartData} options={chartOptions}/>
             </div>
         </div>
     );
