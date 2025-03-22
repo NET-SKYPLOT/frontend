@@ -157,7 +157,9 @@ const ResultPage: React.FC = () => {
                                 <h2 className="text-2xl font-semibold text-blue-700 mb-4">
                                     API Response
                                 </h2>
-                                {responseData}
+                                <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm text-gray-800">
+                                    {JSON.stringify(responseData, null, 2)}
+                                </pre>
                             </div>
                         </>
                     ) : (
