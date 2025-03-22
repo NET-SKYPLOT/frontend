@@ -5,6 +5,8 @@ import Sidebar from "../components/Sidebar";
 import DOPPlot from "../components/DOPPlot";
 import SatelliteVisibility from "../components/SatelliteVisibility";
 import SkyPlot from "../components/SkyPlot";
+import ElevationPlot from "../components/ElevationPlot";
+
 
 const ResultPage: React.FC = () => {
     const location = useLocation();
@@ -126,6 +128,7 @@ const ResultPage: React.FC = () => {
                                     <DOPPlot data={firstReceiver.dop}/>
                                     <SatelliteVisibility data={firstReceiver.visibility}/>
                                     <SkyPlot responseData={firstReceiver.skyplot_data?.satellites || []}/>
+                                    <ElevationPlot responseData={firstReceiver.skyplot_data.satellites}/>
                                 </div>
                             )}
 
@@ -138,6 +141,7 @@ const ResultPage: React.FC = () => {
                                     <DOPPlot data={secondReceiver.common_dop}/>
                                     <SatelliteVisibility data={secondReceiver.common_visibility}/>
                                     <SkyPlot responseData={secondReceiver.skyplot_data?.satellites || []}/>
+                                    <ElevationPlot responseData={secondReceiver.skyplot_data.satellites}/>
                                 </div>
                             )}
 
@@ -150,6 +154,7 @@ const ResultPage: React.FC = () => {
                                     <DOPPlot data={thirdReceiver.common_dop}/>
                                     <SatelliteVisibility data={thirdReceiver.common_visibility}/>
                                     <SkyPlot responseData={thirdReceiver.skyplot_data?.satellites || []}/>
+                                    <ElevationPlot responseData={thirdReceiver.skyplot_data.satellites}/>
                                 </div>
                             )}
 
