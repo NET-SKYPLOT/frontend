@@ -115,7 +115,7 @@ const ElevationPlot: React.FC<ElevationPlotProps> = ({responseData}) => {
             <h3 className="text-xl font-semibold mb-4">Elevation Plot</h3>
 
             {/* Elevation Line Chart */}
-            <div className="h-[500px] w-full">
+            <div className="h-[800px] w-full">
                 <Line data={chartData} options={chartOptions}/>
             </div>
 
