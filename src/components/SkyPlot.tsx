@@ -149,6 +149,9 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                         yMax: 30,
                         borderColor: "rgba(150,150,150,0.3)",
                         borderWidth: 1,
+                        backgroundColor: "rgba(0,0,0,0)",
+                        display: true,
+                        drawTime: "beforeDatasetsDraw" as const,
                     },
                     ring2: {
                         type: "ellipse" as const,
@@ -158,6 +161,9 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                         yMax: 60,
                         borderColor: "rgba(150,150,150,0.3)",
                         borderWidth: 1,
+                        backgroundColor: "rgba(0,0,0,0)",
+                        display: true,
+                        drawTime: "beforeDatasetsDraw" as const,
                     },
                     ring3: {
                         type: "ellipse" as const,
@@ -167,6 +173,9 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                         yMax: 90,
                         borderColor: "rgba(150,150,150,0.4)",
                         borderWidth: 1,
+                        backgroundColor: "rgba(0,0,0,0)",
+                        display: true,
+                        drawTime: "beforeDatasetsDraw" as const,
                     },
 
                     // === Axis lines ===
