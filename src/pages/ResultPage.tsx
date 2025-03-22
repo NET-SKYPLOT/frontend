@@ -152,6 +152,13 @@ const ResultPage: React.FC = () => {
                                     <SkyPlot responseData={thirdReceiver.skyplot_data?.satellites || []}/>
                                 </div>
                             )}
+
+                            <div className="mb-12">
+                                <h2 className="text-2xl font-semibold text-blue-700 mb-4">
+                                    API Response
+                                </h2>
+                                {responseData}
+                            </div>
                         </>
                     ) : (
                         <p className="text-red-500">No response received.</p>
