@@ -1,5 +1,7 @@
-import React, {useState} from "react";
-import Plot from "react-plotly.js";
+import React, {useState, useMemo, lazy, Suspense} from "react";
+import debounce from "lodash.debounce";
+
+const Plot = lazy(() => import("react-plotly.js"));
 
 interface SatelliteTrajectory {
     azimuth: number;
@@ -23,13 +25,15 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         return <p className="text-red-500">No satellites found in Skyplot data.</p>;
     }
 
-    const timestamps = Array.from(
-        new Set(
-            responseData.flatMap((satellite) =>
-                satellite.trajectory.map((point) => point.time)
+    const timestamps = useMemo(() => {
+        return Array.from(
+            new Set(
+                responseData.flatMap((satellite) =>
+                    satellite.trajectory.map((point) => point.time)
+                )
             )
-        )
-    ).sort();
+        ).sort();
+    }, [responseData]);
 
     const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
     const selectedTime = timestamps[selectedTimeIndex];
@@ -41,9 +45,9 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         BEIDOU: "orange",
     };
 
-    const uniqueConstellations = Array.from(
-        new Set(responseData.map((sat) => sat.constellation))
-    );
+    const uniqueConstellations = useMemo(() => {
+        return Array.from(new Set(responseData.map((sat) => sat.constellation)));
+    }, [responseData]);
 
     const [visibleConstellations, setVisibleConstellations] = useState<Record<string, boolean>>(
         uniqueConstellations.reduce((acc, type) => {
@@ -59,26 +63,33 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         }));
     };
 
-    // Prepare data for Plotly scatterpolar
-    const scatterData = responseData
-        .filter((sat) => visibleConstellations[sat.constellation])
-        .map((sat) => {
-            const point = sat.trajectory.find((p) => p.time === selectedTime);
-            if (!point) return null;
+    const scatterData = useMemo(() => {
+        return responseData
+            .filter((sat) => visibleConstellations[sat.constellation])
+            .map((sat) => {
+                const point = sat.trajectory.find((p) => p.time === selectedTime);
+                if (!point) return null;
 
-            return {
-                r: [90 - point.elevation],
-                theta: [point.azimuth],
-                mode: "markers" as const,
-                type: "scatterpolar" as const,
-                name: `${sat.constellation} - ${sat.satellite_id}`,
-                marker: {
-                    color: point.visible ? colorMap[sat.constellation] || "gray" : "gray",
-                    size: 8,
-                },
-            };
-        })
-        .filter((d): d is Extract<typeof d, object> => d !== null);
+                return {
+                    r: [90 - point.elevation],
+                    theta: [point.azimuth],
+                    mode: "markers" as const,
+                    type: "scatterpolar" as const,
+                    name: `${sat.constellation} - ${sat.satellite_id}`,
+                    marker: {
+                        color: point.visible ? colorMap[sat.constellation] || "gray" : "gray",
+                        size: 8,
+                    },
+                };
+            })
+            .filter((d): d is Extract<typeof d, object> => d !== null);
+    }, [responseData, visibleConstellations, selectedTime]);
+
+    const debouncedTimeChange = useMemo(() => {
+        return debounce((value: number) => {
+            setSelectedTimeIndex(value);
+        }, 100);
+    }, []);
 
     return (
         <div className="p-6 bg-white shadow-md rounded-md mt-6">
@@ -99,35 +110,39 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                 ))}
             </div>
 
-            {/* Plotly Skyplot */}
-            <div className="h-[600px] w-[600px] mx-auto">
-                <Plot
-                    data={scatterData}
-                    layout={{
-                        width: 600,
-                        height: 600,
-                        polar: {
-                            radialaxis: {
-                                visible: true,
-                                range: [0, 90],
-                                tickvals: [30, 60, 90],
-                                ticktext: ["60°", "30°", "0°"],
-                                angle: 0,
-                            },
-                            angularaxis: {
-                                direction: "clockwise",
-                                rotation: 90,
-                                tickmode: "array",
-                                tickvals: [0, 90, 180, 270],
-                                ticktext: ["N", "E", "S", "W"],
-                            },
-                        },
-                        margin: {t: 30, r: 0, b: 0, l: 0},
-                        showlegend: false,
-                    }}
-                    config={{responsive: true}}
-                />
-            </div>
+            {/* Plotly Skyplot - Lazy loaded with Suspense */}
+            <Suspense fallback={<div className="text-center">Loading SkyPlot...</div>}>
+                {scatterData.length > 0 && (
+                    <div className="h-[600px] w-[600px] mx-auto">
+                        <Plot
+                            data={scatterData}
+                            layout={{
+                                width: 600,
+                                height: 600,
+                                polar: {
+                                    radialaxis: {
+                                        visible: true,
+                                        range: [0, 90],
+                                        tickvals: [30, 60, 90],
+                                        ticktext: ["60°", "30°", "0°"],
+                                        angle: 0,
+                                    },
+                                    angularaxis: {
+                                        direction: "clockwise",
+                                        rotation: 90,
+                                        tickmode: "array",
+                                        tickvals: [0, 90, 180, 270],
+                                        ticktext: ["N", "E", "S", "W"],
+                                    },
+                                },
+                                margin: {t: 30, r: 0, b: 0, l: 0},
+                                showlegend: false,
+                            }}
+                            config={{responsive: true}}
+                        />
+                    </div>
+                )}
+            </Suspense>
 
             {/* Time Slider */}
             <div className="mt-4 flex flex-col items-center">
@@ -139,7 +154,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                     min={0}
                     max={timestamps.length - 1}
                     value={selectedTimeIndex}
-                    onChange={(e) => setSelectedTimeIndex(Number(e.target.value))}
+                    onChange={(e) => debouncedTimeChange(Number(e.target.value))}
                     className="w-full cursor-pointer"
                 />
                 <div className="flex justify-between w-full text-sm text-gray-500 mt-2">
