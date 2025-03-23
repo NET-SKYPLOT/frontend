@@ -3,6 +3,8 @@ FROM node:18 AS build
 
 WORKDIR /app
 
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 COPY package.json package-lock.json ./
 
 RUN npm install
