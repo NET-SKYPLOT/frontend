@@ -36,8 +36,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         setLoading(true);
         setError(null);
 
-        console.log(formData);
-
         try {
             // Extract "YYYY-MM-DD" from Date object
             const date = formData.date;

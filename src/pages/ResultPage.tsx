@@ -44,7 +44,7 @@ const ResultPage: React.FC = () => {
                 {/* Print Button */}
                 <div className="flex justify-end mb-4">
                     <button
-                        onClick={() => handlePrint()}  // ✅ Correctly calling the print function
+                        onClick={() => handlePrint()}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     >
                         Export as PDF
@@ -83,6 +83,8 @@ const ResultPage: React.FC = () => {
                             ) : (
                                 <p className="text-gray-500">No constellations selected.</p>
                             )}
+
+                            <p><strong>Cutoff Angle:</strong> {location.state?.formData.cutoffAngle}</p>
 
                             {/* Receivers Information */}
                             <h3 className="text-xl font-semibold mt-6">Receivers Information</h3>
