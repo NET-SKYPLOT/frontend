@@ -84,8 +84,6 @@ const ResultPage: React.FC = () => {
                                 <p className="text-gray-500">No constellations selected.</p>
                             )}
 
-                            <p><strong>Cutoff Angle:</strong> {location.state?.formData.cutoffAngle}</p>
-
                             {/* Receivers Information */}
                             <h3 className="text-xl font-semibold mt-6">Receivers Information</h3>
                             {requestData.receivers.map((receiver: any, rIndex: number) => (
@@ -117,6 +115,8 @@ const ResultPage: React.FC = () => {
                                     )}
                                 </div>
                             ))}
+                            <h3 className="text-xl font-semibold mt-6">Selected Cutoff Angle</h3>
+                            <p><strong>Cutoff Angle:</strong> {location.state?.formData.cutoffAngle}</p>
                         </div>
                     )}
 
