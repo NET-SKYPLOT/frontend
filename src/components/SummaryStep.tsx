@@ -36,6 +36,8 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         setLoading(true);
         setError(null);
 
+        console.log(formData);
+
         const startDateTime = new Date(`${formData.date}T${formData.time}`);
 
         const requestData = {
