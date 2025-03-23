@@ -34,6 +34,7 @@ const PlanningWizard = () => {
             } as Receiver,
         ],
         constellations: [],
+        cutoffAngle: 0,
         selectedDEM: null,
     });
 
@@ -58,6 +59,7 @@ const PlanningWizard = () => {
                 } as Receiver,
             ],
             constellations: [],
+            cutoffAngle: 0,
             selectedDEM: null,
         });
         setStep(1);
