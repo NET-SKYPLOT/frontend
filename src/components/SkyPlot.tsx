@@ -1,7 +1,15 @@
-import React, {useState, useMemo, lazy, Suspense} from "react";
-import debounce from "lodash.debounce";
+import React, {useState} from "react";
+import {
+    Chart as ChartJS,
+    LinearScale,
+    PointElement,
+    Legend,
+    Tooltip,
+} from "chart.js";
+import annotationPlugin from "chartjs-plugin-annotation";
+import {Scatter} from "react-chartjs-2";
 
-const Plot = lazy(() => import("react-plotly.js"));
+ChartJS.register(LinearScale, PointElement, Legend, Tooltip, annotationPlugin);
 
 interface SatelliteTrajectory {
     azimuth: number;
@@ -25,15 +33,13 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         return <p className="text-red-500">No satellites found in Skyplot data.</p>;
     }
 
-    const timestamps = useMemo(() => {
-        return Array.from(
-            new Set(
-                responseData.flatMap((satellite) =>
-                    satellite.trajectory.map((point) => point.time)
-                )
+    const timestamps = Array.from(
+        new Set(
+            responseData.flatMap((satellite) =>
+                satellite.trajectory.map((point) => point.time)
             )
-        ).sort();
-    }, [responseData]);
+        )
+    ).sort();
 
     const [selectedTimeIndex, setSelectedTimeIndex] = useState(0);
     const selectedTime = timestamps[selectedTimeIndex];
@@ -45,9 +51,9 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         BEIDOU: "orange",
     };
 
-    const uniqueConstellations = useMemo(() => {
-        return Array.from(new Set(responseData.map((sat) => sat.constellation)));
-    }, [responseData]);
+    const uniqueConstellations = Array.from(
+        new Set(responseData.map((sat) => sat.constellation))
+    );
 
     const [visibleConstellations, setVisibleConstellations] = useState<Record<string, boolean>>(
         uniqueConstellations.reduce((acc, type) => {
@@ -63,33 +69,138 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         }));
     };
 
-    const scatterData = useMemo(() => {
-        return responseData
-            .filter((sat) => visibleConstellations[sat.constellation])
-            .map((sat) => {
-                const point = sat.trajectory.find((p) => p.time === selectedTime);
-                if (!point) return null;
+    // Filter satellites based on selected time and visible constellations
+    const filteredPoints = responseData
+        .filter((sat) => visibleConstellations[sat.constellation])
+        .map((sat) => {
+            const point = sat.trajectory.find((p) => p.time === selectedTime);
+            if (!point) return null;
 
-                return {
-                    r: [90 - point.elevation],
-                    theta: [point.azimuth],
-                    mode: "markers" as const,
-                    type: "scatterpolar" as const,
-                    name: `${sat.constellation} - ${sat.satellite_id}`,
-                    marker: {
-                        color: point.visible ? colorMap[sat.constellation] || "gray" : "gray",
-                        size: 8,
+            const radius = 90 - point.elevation;
+            const angleRad = (point.azimuth * Math.PI) / 180;
+
+            return {
+                label: `${sat.constellation} - ${sat.satellite_id}`,
+                data: [
+                    {
+                        x: radius * Math.sin(angleRad),
+                        y: radius * Math.cos(angleRad),
                     },
-                };
-            })
-            .filter((d): d is Extract<typeof d, object> => d !== null);
-    }, [responseData, visibleConstellations, selectedTime]);
+                ],
+                backgroundColor: point.visible ? colorMap[sat.constellation] || "gray" : "gray",
+                pointRadius: 5,
+            };
+        })
+        .filter(Boolean) as any[];
 
-    const debouncedTimeChange = useMemo(() => {
-        return debounce((value: number) => {
-            setSelectedTimeIndex(value);
-        }, 100);
-    }, []);
+    const chartData = {
+        datasets: filteredPoints,
+    };
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                type: "linear" as const,
+                min: -90,
+                max: 90,
+                ticks: {
+                    stepSize: 30,
+                },
+                grid: {
+                    color: "rgba(200,200,200,0.2)",
+                },
+            },
+            y: {
+                type: "linear" as const,
+                min: -90,
+                max: 90,
+                ticks: {
+                    stepSize: 30,
+                },
+                grid: {
+                    color: "rgba(200,200,200,0.2)",
+                },
+            },
+        },
+        plugins: {
+            legend: {
+                display: false,
+            },
+            tooltip: {
+                callbacks: {
+                    label: (context: any) => {
+                        const label = context.dataset.label || "";
+                        const x = context.raw.x;
+                        const y = context.raw.y;
+                        return `${label}: x=${x.toFixed(2)}, y=${y.toFixed(2)}`;
+                    },
+                },
+            },
+            annotation: {
+                annotations: {
+                    // === Rings ===
+                    ring1: {
+                        type: "ellipse" as const,
+                        xMin: -30,
+                        xMax: 30,
+                        yMin: -30,
+                        yMax: 30,
+                        borderColor: "rgba(150,150,150,0.3)",
+                        borderWidth: 1,
+                        backgroundColor: "rgba(0,0,0,0)",
+                        display: true,
+                        drawTime: "beforeDatasetsDraw" as const,
+                    },
+                    ring2: {
+                        type: "ellipse" as const,
+                        xMin: -60,
+                        xMax: 60,
+                        yMin: -60,
+                        yMax: 60,
+                        borderColor: "rgba(150,150,150,0.3)",
+                        borderWidth: 1,
+                        backgroundColor: "rgba(0,0,0,0)",
+                        display: true,
+                        drawTime: "beforeDatasetsDraw" as const,
+                    },
+                    ring3: {
+                        type: "ellipse" as const,
+                        xMin: -90,
+                        xMax: 90,
+                        yMin: -90,
+                        yMax: 90,
+                        borderColor: "rgba(150,150,150,0.4)",
+                        borderWidth: 1,
+                        backgroundColor: "rgba(0,0,0,0)",
+                        display: true,
+                        drawTime: "beforeDatasetsDraw" as const,
+                    },
+
+                    // === Axis lines ===
+                    axisX: {
+                        type: "line" as const,
+                        xMin: -90,
+                        xMax: 90,
+                        yMin: 0,
+                        yMax: 0,
+                        borderColor: "gray",
+                        borderWidth: 0.8,
+                    },
+                    axisY: {
+                        type: "line" as const,
+                        xMin: 0,
+                        xMax: 0,
+                        yMin: -90,
+                        yMax: 90,
+                        borderColor: "gray",
+                        borderWidth: 0.8,
+                    },
+                },
+            },
+        },
+    };
 
     return (
         <div className="p-6 bg-white shadow-md rounded-md mt-6">
@@ -110,39 +221,10 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                 ))}
             </div>
 
-            {/* Plotly Skyplot - Lazy loaded with Suspense */}
-            <Suspense fallback={<div className="text-center">Loading SkyPlot...</div>}>
-                {scatterData.length > 0 && (
-                    <div className="h-[600px] w-[600px] mx-auto">
-                        <Plot
-                            data={scatterData}
-                            layout={{
-                                width: 600,
-                                height: 600,
-                                polar: {
-                                    radialaxis: {
-                                        visible: true,
-                                        range: [0, 90],
-                                        tickvals: [30, 60, 90],
-                                        ticktext: ["60°", "30°", "0°"],
-                                        angle: 0,
-                                    },
-                                    angularaxis: {
-                                        direction: "clockwise",
-                                        rotation: 90,
-                                        tickmode: "array",
-                                        tickvals: [0, 90, 180, 270],
-                                        ticktext: ["N", "E", "S", "W"],
-                                    },
-                                },
-                                margin: {t: 30, r: 0, b: 0, l: 0},
-                                showlegend: false,
-                            }}
-                            config={{responsive: true}}
-                        />
-                    </div>
-                )}
-            </Suspense>
+            {/* Chart */}
+            <div className="h-[600px] w-[600px] mx-auto">
+                <Scatter data={chartData} options={chartOptions}/>
+            </div>
 
             {/* Time Slider */}
             <div className="mt-4 flex flex-col items-center">
@@ -154,7 +236,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                     min={0}
                     max={timestamps.length - 1}
                     value={selectedTimeIndex}
-                    onChange={(e) => debouncedTimeChange(Number(e.target.value))}
+                    onChange={(e) => setSelectedTimeIndex(Number(e.target.value))}
                     className="w-full cursor-pointer"
                 />
                 <div className="flex justify-between w-full text-sm text-gray-500 mt-2">
