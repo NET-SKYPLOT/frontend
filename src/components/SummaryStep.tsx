@@ -132,6 +132,12 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 )}
             </div>
 
+            {/* Selected Cutoff Angle */}
+            <div className="p-4 border rounded-md bg-gray-50">
+                <h3 className="text-xl font-semibold">Selected Cutoff Angle</h3>
+                <p><strong>Cutoff Angle:</strong> {formData.cutoffAngle} degree</p>
+            </div>
+
             {/* Receivers List */}
             <div className="p-4 border rounded-md bg-gray-50">
                 <h3 className="text-xl font-semibold">Receivers</h3>
