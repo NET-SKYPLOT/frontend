@@ -38,39 +38,62 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
 
         console.log(formData);
 
-        const startDateTime = new Date(`${formData.date}T${formData.time}`);
-
-        const requestData = {
-            start_datetime: startDateTime.toISOString(),
-            duration_hours: Number(formData.duration) / 60,
-            dem: {
-                type: selectedDem.type,
-                source: demSource,
-            },
-            constellations: formData.constellations || [],
-            receivers: formData.receivers.map((receiver: any) => ({
-                id: receiver.id,
-                role: receiver.role,
-                coordinates: {
-                    latitude: receiver.lat,
-                    longitude: receiver.lon,
-                    height: receiver.height || 0,
-                },
-                obstacles: receiver.obstacles?.map((obstacle: any) => ({
-                    vertices: obstacle.coordinates.map((vertex: [number, number]) => ({
-                        latitude: vertex[0],
-                        longitude: vertex[1],
-                    })),
-                    height: obstacle.totalHeight,
-                })) || [],
-            })),
-            application: formData.receivers.length > 1 ? "differential_gnss" : "single",
-        };
-
         try {
+            // Extract "YYYY-MM-DD" from Date object
+            const date = formData.date;
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            const formattedDate = `${year}-${month}-${day}`;
+
+            // Extract "HH:mm:ss" from Time object
+            const time = formData.time;
+            const hours = String(time.getHours()).padStart(2, "0");
+            const minutes = String(time.getMinutes()).padStart(2, "0");
+            const seconds = String(time.getSeconds()).padStart(2, "0");
+            const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+            // Combine into full ISO string
+            const localDateTime = new Date(`${formattedDate}T${formattedTime}`);
+            const startDateTime = localDateTime.toISOString(); // always in UTC
+
+            const requestData = {
+                start_datetime: startDateTime,
+                duration_hours: Number(formData.duration) / 60,
+                cutoff_angle: Number(formData.cutoffAngle) || 10,
+                dem: {
+                    type: selectedDem.type,
+                    source: demSource,
+                },
+                constellations: formData.constellations || [],
+                receivers: formData.receivers.map((receiver: any) => ({
+                    id: receiver.id,
+                    role: receiver.role,
+                    coordinates: {
+                        latitude: receiver.lat,
+                        longitude: receiver.lon,
+                        height: receiver.height || 0,
+                    },
+                    obstacles: receiver.obstacles?.map((obstacle: any) => ({
+                        vertices: obstacle.coordinates.map((vertex: [number, number]) => ({
+                            latitude: vertex[0],
+                            longitude: vertex[1],
+                        })),
+                        height: obstacle.totalHeight,
+                    })) || [],
+                })),
+                application: formData.receivers.length > 1 ? "differential_gnss" : "single",
+            };
+
             const response = await axios.post("/api/v1/plan", requestData, {timeout: 300000});
 
-            navigate("/result", {state: {formData, requestData, responseData: response.data}});
+            navigate("/result", {
+                state: {
+                    formData,
+                    requestData,
+                    responseData: response.data,
+                },
+            });
         } catch (err) {
             console.error("Error submitting planning request:", err);
             setError("Failed to submit request. Please try again.");
