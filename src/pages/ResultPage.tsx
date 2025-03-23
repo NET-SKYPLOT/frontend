@@ -115,8 +115,7 @@ const ResultPage: React.FC = () => {
                                     )}
                                 </div>
                             ))}
-                            <h3 className="text-xl font-semibold mt-6">Selected Cutoff Angle</h3>
-                            <p><strong>Cutoff Angle:</strong> {location.state?.formData.cutoffAngle}</p>
+                            <p><strong>Cutoff Angle:</strong> {location.state?.formData.cutoffAngle} degree</p>
                         </div>
                     )}
 
