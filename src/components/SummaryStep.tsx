@@ -36,8 +36,10 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         setLoading(true);
         setError(null);
 
+        const startDateTime = new Date(`${formData.date}T${formData.time}`);
+
         const requestData = {
-            start_datetime: new Date(formData.date).toISOString(),
+            start_datetime: startDateTime.toISOString(),
             duration_hours: Number(formData.duration) / 60,
             dem: {
                 type: selectedDem.type,

@@ -19,7 +19,6 @@ const ResultPage: React.FC = () => {
     const secondReceiver = receivers.length > 1 ? receivers[1] : null;
     const thirdReceiver = receivers.length > 2 ? receivers[2] : null;
 
-    // Ref for printing
     const resultRef = useRef<HTMLDivElement>(null);
 
     const handlePrint = useReactToPrint({
@@ -64,8 +63,10 @@ const ResultPage: React.FC = () => {
                             <h2 className="text-2xl font-semibold text-blue-700 mb-4">
                                 Planning Configuration
                             </h2>
-                            <p><strong>Date:</strong> {new Date(requestData.start_datetime).toLocaleDateString()}</p>
-                            <p><strong>Duration:</strong> {requestData.duration_hours * 60} minutes</p>
+                            <p><strong>Date:</strong> {location.state?.formData.date?.toLocaleDateString()}</p>
+                            <p><strong>Time:</strong> {location.state?.formData.time?.toLocaleTimeString()}</p>
+                            <p><strong>Duration:</strong> {location.state?.formData.duration} minutes</p>
+                            <p><strong>Time Zone:</strong> {location.state?.formData.timezone?.label}</p>
                             <p><strong>Application
                                 Type:</strong> {requestData.application === "differential_gnss" ? "Multiple Receivers" : "Single Receiver"}
                             </p>
