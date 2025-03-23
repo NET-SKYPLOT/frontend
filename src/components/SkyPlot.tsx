@@ -150,6 +150,36 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
             .attr("class", "absolute bg-white text-sm shadow px-2 py-1 border rounded pointer-events-none z-50")
             .style("opacity", 0);
 
+        // Movement paths (up to current time)
+        responseData
+            .filter((sat) => visibleConstellations[sat.constellation])
+            .forEach((sat) => {
+                const pathData: [number, number][] = sat.trajectory
+                    .filter((p) => p.time <= selectedTime)
+                    .map((p): [number, number] => {
+                        const r = (90 - p.elevation) * (radius / 90);
+                        const angleRad = (p.azimuth * Math.PI) / 180;
+                        const x = center.x + r * Math.sin(angleRad);
+                        const y = center.y - r * Math.cos(angleRad);
+                        return [x, y];
+                    });
+
+                const line = d3
+                    .line<[number, number]>()
+                    .x((d) => d[0])
+                    .y((d) => d[1])
+                    .curve(d3.curveLinear);
+
+                svg
+                    .append("path")
+                    .datum(pathData)
+                    .attr("d", line)
+                    .attr("fill", "none")
+                    .attr("stroke", colorMap[sat.constellation] || "gray")
+                    .attr("stroke-width", 1)
+                    .attr("opacity", 0.6);
+            });
+
         // Satellite points
         svg
             .selectAll("circle.sat-point")
@@ -175,7 +205,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         return () => {
             tooltip.remove();
         };
-    }, [filteredPoints]);
+    }, [filteredPoints, responseData, selectedTime, visibleConstellations]);
 
     return (
         <div className="p-6 bg-white shadow-md rounded-md mt-6">
