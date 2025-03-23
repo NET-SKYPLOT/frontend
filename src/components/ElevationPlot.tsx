@@ -112,7 +112,7 @@ const ElevationPlot: React.FC<ElevationPlotProps> = ({responseData}) => {
                     display: true,
                     text: "Elevation (°)",
                 },
-                min: -90,
+                min: 0,
                 max: 90,
             },
         },
