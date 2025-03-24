@@ -27,6 +27,8 @@ const ResultPage: React.FC = () => {
         documentTitle: "Planning Results",
     });
 
+    console.log(responseData.world_view)
+
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth <= 1024);
