@@ -6,6 +6,7 @@ import DOPPlot from "../components/DOPPlot";
 import SatelliteVisibility from "../components/SatelliteVisibility";
 import SkyPlot from "../components/SkyPlot";
 import ElevationPlot from "../components/ElevationPlot";
+import WorldView from "../components/WorldView";
 
 
 const ResultPage: React.FC = () => {
@@ -159,6 +160,13 @@ const ResultPage: React.FC = () => {
                                     <ElevationPlot responseData={thirdReceiver.skyplot_data.satellites}/>
                                 </div>
                             )}
+
+                            <div className="mb-12">
+                                <h2 className="text-2xl font-semibold text-purple-700 mb-4">
+                                    World View
+                                </h2>
+                                <WorldView worldViewData={responseData.world_view}></WorldView>
+                            </div>
 
                             <div className="mb-12">
                                 <h2 className="text-2xl font-semibold text-blue-700 mb-4">

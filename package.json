@@ -28,7 +28,8 @@
     "react-select": "^5.10.0",
     "react-timezone-select": "^3.2.8",
     "react-to-print": "^3.0.5",
-    "swiper": "^11.2.4"
+    "swiper": "^11.2.4",
+    "topojson-client": "^3.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
@@ -38,6 +39,7 @@
     "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
+    "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.19.0",
