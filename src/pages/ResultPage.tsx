@@ -27,8 +27,6 @@ const ResultPage: React.FC = () => {
         documentTitle: "Planning Results",
     });
 
-    console.log(responseData.world_view)
-
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth <= 1024);
@@ -163,12 +161,14 @@ const ResultPage: React.FC = () => {
                                 </div>
                             )}
 
-                            <div className="mb-12">
-                                <h2 className="text-2xl font-semibold text-purple-700 mb-4">
-                                    World View
-                                </h2>
-                                <WorldView worldViewData={responseData.world_view}></WorldView>
-                            </div>
+                            {responseData?.world_view?.length > 0 && (
+                                <div className="mb-12">
+                                    <h2 className="text-2xl font-semibold text-purple-700 mb-4">
+                                        World View
+                                    </h2>
+                                    <WorldView worldViewData={responseData.world_view}/>
+                                </div>
+                            )}
 
                             <div className="mb-12">
                                 <h2 className="text-2xl font-semibold text-blue-700 mb-4">
