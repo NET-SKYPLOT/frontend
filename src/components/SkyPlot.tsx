@@ -209,7 +209,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
 
     return (
         <div className="p-6 bg-white shadow-md rounded-md mt-6">
-            <h3 className="text-xl font-semibold mb-4">SkyPlot (D3)</h3>
+            <h3 className="text-xl font-semibold mb-4">SkyPlot</h3>
 
             {/* Constellation Toggles */}
             <div className="mb-4 flex flex-wrap gap-4">

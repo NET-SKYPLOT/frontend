@@ -163,9 +163,6 @@ const ResultPage: React.FC = () => {
 
                             {responseData?.world_view?.length > 0 && (
                                 <div className="mb-12">
-                                    <h2 className="text-2xl font-semibold text-purple-700 mb-4">
-                                        World View
-                                    </h2>
                                     <WorldView worldViewData={responseData.world_view}/>
                                 </div>
                             )}
