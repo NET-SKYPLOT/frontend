@@ -58,7 +58,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
             const requestData = {
                 start_datetime: startDateTime,
                 duration_hours: Number(formData.duration) / 60,
-                cutoff_angle: Number(formData.cutoffAngle) || 10,
+                cutoff_angle: Number(formData.cutoffAngle) || 0,
                 dem: {
                     type: selectedDem.type,
                     source: demSource,
