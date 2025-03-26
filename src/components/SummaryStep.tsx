@@ -83,7 +83,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 application: formData.receivers.length > 1 ? "differential_gnss" : "single",
             };
 
-            const response = await axios.post("/api/v1/plan", requestData, {timeout: 300000});
+            const response = await axios.post("/api/v1/plan", requestData, { timeout: 1200000 });
 
             navigate("/result", {
                 state: {
