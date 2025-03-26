@@ -166,24 +166,6 @@ const ResultPage: React.FC = () => {
                                     <WorldView worldViewData={responseData.world_view}/>
                                 </div>
                             )}
-
-                            <div className="mb-12">
-                                <h2 className="text-2xl font-semibold text-blue-700 mb-4">
-                                    Request Data
-                                </h2>
-                                <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm text-gray-800">
-                                    {JSON.stringify(requestData, null, 2)}
-                                </pre>
-                            </div>
-
-                            <div className="mb-12">
-                                <h2 className="text-2xl font-semibold text-blue-700 mb-4">
-                                    API Response
-                                </h2>
-                                <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm text-gray-800">
-                                    {JSON.stringify(responseData, null, 2)}
-                                </pre>
-                            </div>
                         </>
                     ) : (
                         <p className="text-red-500">No response received.</p>
