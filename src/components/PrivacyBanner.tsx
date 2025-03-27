@@ -1,15 +1,36 @@
 import {useEffect, useState} from "react";
 
+const EXPIRY_DAYS = 7;
+const MILLISECONDS_IN_A_DAY = 24 * 60 * 60 * 1000;
+
 const PrivacyBanner = () => {
     const [showBanner, setShowBanner] = useState(false);
 
     useEffect(() => {
-        const hasAccepted = localStorage.getItem("privacy_notice_accepted");
-        if (!hasAccepted) setShowBanner(true);
+        const stored = localStorage.getItem("privacy_notice_accepted");
+
+        if (!stored) {
+            setShowBanner(true);
+        } else {
+            try {
+                const parsed = JSON.parse(stored);
+                const acceptedAt = parsed.timestamp;
+                const now = Date.now();
+
+                if (now - acceptedAt > EXPIRY_DAYS * MILLISECONDS_IN_A_DAY) {
+                    setShowBanner(true);
+                }
+            } catch {
+                setShowBanner(true);
+            }
+        }
     }, []);
 
     const handleAccept = () => {
-        localStorage.setItem("privacy_notice_accepted", "true");
+        const data = {
+            timestamp: Date.now(),
+        };
+        localStorage.setItem("privacy_notice_accepted", JSON.stringify(data));
         setShowBanner(false);
     };
 
