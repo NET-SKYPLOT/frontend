@@ -115,6 +115,8 @@ const Sidebar = ({activeTab, setActiveTab}: {
                         )}
                         <NavItem icon={<Book size={20}/>} label="Documentations" link="/documentations"
                                  active={location.pathname === "/documentations"}/>
+                        <NavItem icon={<ClipboardList size={20}/>} label="Planning Results" link="/result"
+                                 active={location.pathname === "/result"}/>
                         <NavItem icon={<ShieldCheck size={20}/>} label="Privacy Policy" link="/privacy-policy"
                                  active={location.pathname === "/privacy-policy"}/>
                     </nav>
@@ -156,6 +158,8 @@ const Sidebar = ({activeTab, setActiveTab}: {
                             )}
                             <NavItem icon={<Book size={24}/>} label="Documentations" link="/documentations"
                                      active={location.pathname === "/documentations"} setIsOpen={setIsOpen} isMobile/>
+                            <NavItem icon={<ClipboardList size={24}/>} label="Planning Results" link="/result"
+                                     active={location.pathname === "/result"} setIsOpen={setIsOpen} isMobile/>
                             <NavItem icon={<ShieldCheck size={24}/>} label="Privacy Policy" link="/privacy-policy"
                                      active={location.pathname === "/privacy-policy"} setIsOpen={setIsOpen} isMobile/>
                             <Link to="/planning" onClick={() => setIsOpen(false)} className="block w-full px-2">
@@ -187,7 +191,7 @@ const NavItem = ({icon, label, link, active, setIsOpen, isMobile}: {
 }) => (
     <Link to={link} onClick={() => isMobile && setIsOpen?.(false)} className="block w-full">
         <div
-            className={`flex items-center gap-3 px-6 py-4 text-xl rounded-md cursor-pointer transition ${
+            className={`flex items-center gap-3 px-6 py-4 text-lg rounded-md cursor-pointer transition ${
                 active ? "bg-blue-500 text-white" : "text-gray-700 hover:bg-gray-100"
             }`}
         >

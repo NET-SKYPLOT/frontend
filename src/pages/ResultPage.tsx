@@ -8,7 +8,6 @@ import SkyPlot from "../components/SkyPlot";
 import ElevationPlot from "../components/ElevationPlot";
 import WorldView from "../components/WorldView";
 
-
 const ResultPage: React.FC = () => {
     const location = useLocation();
     const requestData = location.state?.requestData;
@@ -39,137 +38,144 @@ const ResultPage: React.FC = () => {
     return (
         <div className="flex h-screen w-screen bg-gray-50">
             {/* Sidebar */}
-            <Sidebar/>
+            <Sidebar activeTab="Planning Results" setActiveTab={() => {
+            }}/>
 
+            {/* Main Content */}
             <main className={`flex-1 p-6 bg-white shadow-md overflow-y-auto ${!isMobile ? "ml-64" : ""}`}>
-                {/* Print Button */}
-                <div className="flex justify-end mb-4">
-                    <button
-                        onClick={() => handlePrint()}
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    >
-                        Export as PDF
-                    </button>
-                </div>
+                <div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto text-gray-800">
+                    {/* Print Button */}
+                    <div className="flex justify-end mb-6">
+                        <button
+                            onClick={() => handlePrint()}
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        >
+                            Export as PDF
+                        </button>
+                    </div>
 
-                {/* Printable Content */}
-                <div ref={resultRef}>
-                    <h1 className="text-3xl font-bold text-gray-800 mb-6">
-                        Planning Request Results
-                    </h1>
+                    {/* Printable Content */}
+                    <div ref={resultRef}>
+                        <h1 className="text-3xl font-bold text-gray-800 mb-6">
+                            Planning Request Results
+                        </h1>
 
-                    {/* Planning Configuration Summary */}
-                    {requestData && (
-                        <div className="p-6 border rounded-md bg-gray-50 mb-8">
-                            <h2 className="text-2xl font-semibold text-blue-700 mb-4">
-                                Planning Configuration
-                            </h2>
-                            <p><strong>Date:</strong> {location.state?.formData.date?.toLocaleDateString()}</p>
-                            <p><strong>Time:</strong> {location.state?.formData.time?.toLocaleTimeString()}</p>
-                            <p><strong>Duration:</strong> {location.state?.formData.duration} minutes</p>
-                            <p><strong>Time Zone:</strong> {location.state?.formData.timezone?.label}</p>
-                            <p><strong>Application
-                                Type:</strong> {requestData.application === "differential_gnss" ? "Multiple Receivers" : "Single Receiver"}
-                            </p>
-                            <p><strong>Selected
-                                DEM:</strong> {location.state?.formData?.selectedDEM === "no_dem" ? "No DEM selected" : `${requestData.dem.type} (Source: ${requestData.dem.source})`}
-                            </p>
-                            <p><strong>Cutoff Angle:</strong> {location.state?.formData.cutoffAngle} degree</p>
-                            <h3 className="text-xl font-semibold mt-4">Selected GNSS Constellations</h3>
-                            {requestData.constellations.length > 0 ? (
-                                <ul className="list-disc ml-6">
-                                    {requestData.constellations.map((constellation: string) => (
-                                        <li key={constellation}>{constellation}</li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-gray-500">No constellations selected.</p>
-                            )}
+                        {/* Planning Configuration Summary */}
+                        {requestData && (
+                            <div className="p-6 border rounded-md bg-gray-50 mb-10">
+                                <h2 className="text-2xl font-semibold text-blue-700 mb-4">
+                                    Planning Configuration
+                                </h2>
+                                <p><strong>Date:</strong> {location.state?.formData.date?.toLocaleDateString()}</p>
+                                <p><strong>Time:</strong> {location.state?.formData.time?.toLocaleTimeString()}</p>
+                                <p><strong>Duration:</strong> {location.state?.formData.duration} minutes</p>
+                                <p><strong>Time Zone:</strong> {location.state?.formData.timezone?.label}</p>
+                                <p><strong>Application
+                                    Type:</strong> {requestData.application === "differential_gnss" ? "Multiple Receivers" : "Single Receiver"}
+                                </p>
+                                <p><strong>Selected
+                                    DEM:</strong> {location.state?.formData?.selectedDEM === "no_dem" ? "No DEM selected" : `${requestData.dem.type} (Source: ${requestData.dem.source})`}
+                                </p>
+                                <p><strong>Cutoff Angle:</strong> {location.state?.formData.cutoffAngle} degree</p>
+                                <h3 className="text-xl font-semibold mt-4">Selected GNSS Constellations</h3>
+                                {requestData.constellations.length > 0 ? (
+                                    <ul className="list-disc ml-6">
+                                        {requestData.constellations.map((constellation: string) => (
+                                            <li key={constellation}>{constellation}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-gray-500">No constellations selected.</p>
+                                )}
 
-                            {/* Receivers Information */}
-                            <h3 className="text-xl font-semibold mt-6">Receivers Information</h3>
-                            {requestData.receivers.map((receiver: any, rIndex: number) => (
-                                <div key={receiver.id} className="p-4 border-b last:border-none">
-                                    <h4 className="text-lg font-semibold mb-2">Receiver {rIndex + 1}</h4>
-                                    <p><strong>ID:</strong> {receiver.id}</p>
-                                    <p><strong>Role:</strong> {receiver.role.toUpperCase()}</p>
-                                    <p><strong>Location:</strong> Lat {receiver.coordinates.latitude},
-                                        Lon {receiver.coordinates.longitude}</p>
-                                    <p><strong>Height from Ground:</strong> {receiver.coordinates.height} meters</p>
-                                    {receiver.obstacles.length > 0 && (
-                                        <div className="mt-2">
-                                            <h5 className="text-md font-semibold">Obstacles:</h5>
-                                            {receiver.obstacles.map((obstacle: any, oIndex: number) => (
-                                                <div key={oIndex} className="pl-4 border-l-2 border-gray-400 mt-1">
-                                                    <p>
-                                                        <strong>Obstacle {oIndex + 1} Height:</strong> {obstacle.height} meters
-                                                    </p>
-                                                    <p><strong>Vertices:</strong></p>
-                                                    <ul className="list-disc ml-6">
-                                                        {obstacle.vertices.map((vertex: any, vIndex: number) => (
-                                                            <li key={vIndex}>Lat {vertex.latitude},
-                                                                Lon {vertex.longitude}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                                {/* Receivers Information */}
+                                <h3 className="text-xl font-semibold mt-6">Receivers Information</h3>
+                                {requestData.receivers.map((receiver: any, rIndex: number) => (
+                                    <div key={receiver.id} className="p-4 border-b last:border-none">
+                                        <h4 className="text-lg font-semibold mb-2">Receiver {rIndex + 1}</h4>
+                                        <p><strong>ID:</strong> {receiver.id}</p>
+                                        <p><strong>Role:</strong> {receiver.role.toUpperCase()}</p>
+                                        <p><strong>Location:</strong> Lat {receiver.coordinates.latitude},
+                                            Lon {receiver.coordinates.longitude}</p>
+                                        <p><strong>Height from Ground:</strong> {receiver.coordinates.height} meters</p>
+                                        {receiver.obstacles.length > 0 && (
+                                            <div className="mt-2">
+                                                <h5 className="text-md font-semibold">Obstacles:</h5>
+                                                {receiver.obstacles.map((obstacle: any, oIndex: number) => (
+                                                    <div key={oIndex} className="pl-4 border-l-2 border-gray-400 mt-1">
+                                                        <p>
+                                                            <strong>Obstacle {oIndex + 1} Height:</strong> {obstacle.height} meters
+                                                        </p>
+                                                        <p><strong>Vertices:</strong></p>
+                                                        <ul className="list-disc ml-6">
+                                                            {obstacle.vertices.map((vertex: any, vIndex: number) => (
+                                                                <li key={vIndex}>Lat {vertex.latitude},
+                                                                    Lon {vertex.longitude}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
-                    {responseData ? (
-                        <>
-                            {/* First Receiver Plots */}
-                            {firstReceiver && (
-                                <div className="mb-12">
-                                    <h2 className="text-2xl font-semibold text-blue-700 mb-4">
-                                        Receiver 1 - ID: {firstReceiver.id} - Role: {firstReceiver.role.toUpperCase()}
-                                    </h2>
-                                    <DOPPlot data={firstReceiver.dop}/>
-                                    <SatelliteVisibility data={firstReceiver.visibility}/>
-                                    <SkyPlot responseData={firstReceiver.skyplot_data?.satellites || []}/>
-                                    <ElevationPlot responseData={firstReceiver.skyplot_data.satellites}/>
-                                </div>
-                            )}
+                        {responseData ? (
+                            <>
+                                {/* First Receiver Plots */}
+                                {firstReceiver && (
+                                    <div className="mb-16">
+                                        <h2 className="text-2xl font-semibold text-blue-700 mb-4">
+                                            Receiver 1 - ID: {firstReceiver.id} -
+                                            Role: {firstReceiver.role.toUpperCase()}
+                                        </h2>
+                                        <DOPPlot data={firstReceiver.dop}/>
+                                        <SatelliteVisibility data={firstReceiver.visibility}/>
+                                        <SkyPlot responseData={firstReceiver.skyplot_data?.satellites || []}/>
+                                        <ElevationPlot responseData={firstReceiver.skyplot_data.satellites}/>
+                                    </div>
+                                )}
 
-                            {/* Second Receiver Plots */}
-                            {secondReceiver && (
-                                <div className="mb-12">
-                                    <h2 className="text-2xl font-semibold text-green-700 mb-4">
-                                        Receiver 2 - ID: {secondReceiver.id} - Role: {secondReceiver.role.toUpperCase()}
-                                    </h2>
-                                    <DOPPlot data={secondReceiver.common_dop}/>
-                                    <SatelliteVisibility data={secondReceiver.common_visibility}/>
-                                    <SkyPlot responseData={secondReceiver.skyplot_data?.satellites || []}/>
-                                    <ElevationPlot responseData={secondReceiver.skyplot_data.satellites}/>
-                                </div>
-                            )}
+                                {/* Second Receiver Plots */}
+                                {secondReceiver && (
+                                    <div className="mb-16">
+                                        <h2 className="text-2xl font-semibold text-green-700 mb-4">
+                                            Receiver 2 - ID: {secondReceiver.id} -
+                                            Role: {secondReceiver.role.toUpperCase()}
+                                        </h2>
+                                        <DOPPlot data={secondReceiver.common_dop}/>
+                                        <SatelliteVisibility data={secondReceiver.common_visibility}/>
+                                        <SkyPlot responseData={secondReceiver.skyplot_data?.satellites || []}/>
+                                        <ElevationPlot responseData={secondReceiver.skyplot_data.satellites}/>
+                                    </div>
+                                )}
 
-                            {/* Third Receiver Plots */}
-                            {thirdReceiver && (
-                                <div className="mb-12">
-                                    <h2 className="text-2xl font-semibold text-purple-700 mb-4">
-                                        Receiver 3 - ID: {thirdReceiver.id} - Role: {thirdReceiver.role.toUpperCase()}
-                                    </h2>
-                                    <DOPPlot data={thirdReceiver.common_dop}/>
-                                    <SatelliteVisibility data={thirdReceiver.common_visibility}/>
-                                    <SkyPlot responseData={thirdReceiver.skyplot_data?.satellites || []}/>
-                                    <ElevationPlot responseData={thirdReceiver.skyplot_data.satellites}/>
-                                </div>
-                            )}
+                                {/* Third Receiver Plots */}
+                                {thirdReceiver && (
+                                    <div className="mb-16">
+                                        <h2 className="text-2xl font-semibold text-purple-700 mb-4">
+                                            Receiver 3 - ID: {thirdReceiver.id} -
+                                            Role: {thirdReceiver.role.toUpperCase()}
+                                        </h2>
+                                        <DOPPlot data={thirdReceiver.common_dop}/>
+                                        <SatelliteVisibility data={thirdReceiver.common_visibility}/>
+                                        <SkyPlot responseData={thirdReceiver.skyplot_data?.satellites || []}/>
+                                        <ElevationPlot responseData={thirdReceiver.skyplot_data.satellites}/>
+                                    </div>
+                                )}
 
-                            {responseData?.world_view?.length > 0 && (
-                                <div className="mb-12">
-                                    <WorldView worldViewData={responseData.world_view}/>
-                                </div>
-                            )}
-                        </>
-                    ) : (
-                        <p className="text-red-500">No response received.</p>
-                    )}
+                                {responseData?.world_view?.length > 0 && (
+                                    <div className="mb-16">
+                                        <WorldView worldViewData={responseData.world_view}/>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <p className="text-red-500">No response received.</p>
+                        )}
+                    </div>
                 </div>
             </main>
         </div>
