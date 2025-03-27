@@ -25,10 +25,10 @@ interface SatellitePoint {
     color: string;
 }
 
-const width = 600;
-const height = 600;
-const radius = 250;
-const center = {x: width / 2, y: height / 2};
+const baseWidth = 600;
+const baseHeight = 600;
+const baseRadius = 250;
+const center = {x: baseWidth / 2, y: baseHeight / 2};
 
 const colorMap: Record<string, string> = {
     GPS: "blue",
@@ -39,6 +39,8 @@ const colorMap: Record<string, string> = {
 
 const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
     const svgRef = useRef<SVGSVGElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const [containerSize, setContainerSize] = useState({width: baseWidth, height: baseHeight});
 
     const timestamps = Array.from(
         new Set(responseData.flatMap((sat) => sat.trajectory.map((p) => p.time)))
@@ -71,7 +73,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
             const point = sat.trajectory.find((p) => p.time === selectedTime);
             if (!point) return null;
 
-            const r = (90 - point.elevation) * (radius / 90);
+            const r = (90 - point.elevation) * (baseRadius / 90);
             const angleRad = (point.azimuth * Math.PI) / 180;
             const x = center.x + r * Math.sin(angleRad);
             const y = center.y - r * Math.cos(angleRad);
@@ -85,33 +87,52 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         })
         .filter((p): p is SatellitePoint => p !== null);
 
+    // Resize observer to track parent width
+    useEffect(() => {
+        const observer = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+                const {width} = entry.contentRect;
+                const scale = width / baseWidth;
+                setContainerSize({width, height: baseHeight * scale});
+            }
+        });
+
+        if (containerRef.current) observer.observe(containerRef.current);
+        return () => observer.disconnect();
+    }, []);
+
     useEffect(() => {
         const svg = d3.select(svgRef.current);
         svg.selectAll("*").remove();
 
-        // Background
+        const scale = containerSize.width / baseWidth;
+        const cx = center.x * scale;
+        const cy = center.y * scale;
+        const rScale = baseRadius * scale;
+
+        // Background circle
         svg
             .append("circle")
-            .attr("cx", center.x)
-            .attr("cy", center.y)
-            .attr("r", radius)
+            .attr("cx", cx)
+            .attr("cy", cy)
+            .attr("r", rScale)
             .attr("fill", "#f9fafb")
             .attr("stroke", "#ccc");
 
         // Rings
         [30, 60, 90].forEach((e) => {
-            const r = (90 - e) * (radius / 90);
+            const r = (90 - e) * (rScale / 90);
             svg
                 .append("circle")
-                .attr("cx", center.x)
-                .attr("cy", center.y)
+                .attr("cx", cx)
+                .attr("cy", cy)
                 .attr("r", r)
                 .attr("fill", "none")
                 .attr("stroke", "#bbb")
                 .attr("stroke-dasharray", "2,2");
         });
 
-        // Directional Axes
+        // Axes
         const directions = [
             {angle: 0, label: "N"},
             {angle: 90, label: "E"},
@@ -121,46 +142,37 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
 
         directions.forEach(({angle, label}) => {
             const rad = (angle * Math.PI) / 180;
-            const x = center.x + radius * Math.sin(rad);
-            const y = center.y - radius * Math.cos(rad);
+            const x = cx + rScale * Math.sin(rad);
+            const y = cy - rScale * Math.cos(rad);
 
-            svg
-                .append("line")
-                .attr("x1", center.x)
-                .attr("y1", center.y)
-                .attr("x2", x)
-                .attr("y2", y)
-                .attr("stroke", "#aaa");
+            svg.append("line").attr("x1", cx).attr("y1", cy).attr("x2", x).attr("y2", y).attr("stroke", "#aaa");
 
-            svg
-                .append("text")
+            svg.append("text")
                 .attr("x", x)
                 .attr("y", y)
                 .attr("dy", "0.35em")
                 .attr("text-anchor", "middle")
                 .text(label)
-                .style("font-size", "12px")
+                .style("font-size", `${12 * scale}px`)
                 .style("fill", "#444");
         });
 
-        // Tooltip
         const tooltip = d3
             .select("body")
             .append("div")
             .attr("class", "absolute bg-white text-sm shadow px-2 py-1 border rounded pointer-events-none z-50")
             .style("opacity", 0);
 
-        // Movement paths (up to current time)
         responseData
             .filter((sat) => visibleConstellations[sat.constellation])
             .forEach((sat) => {
                 const pathData: [number, number][] = sat.trajectory
                     .filter((p) => p.time <= selectedTime)
                     .map((p): [number, number] => {
-                        const r = (90 - p.elevation) * (radius / 90);
+                        const r = (90 - p.elevation) * (rScale / 90);
                         const angleRad = (p.azimuth * Math.PI) / 180;
-                        const x = center.x + r * Math.sin(angleRad);
-                        const y = center.y - r * Math.cos(angleRad);
+                        const x = cx + r * Math.sin(angleRad);
+                        const y = cy - r * Math.cos(angleRad);
                         return [x, y];
                     });
 
@@ -180,17 +192,16 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                     .attr("opacity", 0.6);
             });
 
-        // Satellite points
         svg
             .selectAll("circle.sat-point")
             .data(filteredPoints)
             .enter()
             .append("circle")
             .attr("class", "sat-point")
-            .attr("cx", (d: SatellitePoint) => d.x)
-            .attr("cy", (d: SatellitePoint) => d.y)
-            .attr("r", 5)
-            .attr("fill", (d: SatellitePoint) => d.color)
+            .attr("cx", (d) => d.x * scale)
+            .attr("cy", (d) => d.y * scale)
+            .attr("r", 5 * scale)
+            .attr("fill", (d) => d.color)
             .on("mouseover", function (event: MouseEvent, d: SatellitePoint) {
                 tooltip.transition().duration(200).style("opacity", 0.9);
                 tooltip
@@ -205,13 +216,12 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         return () => {
             tooltip.remove();
         };
-    }, [filteredPoints, responseData, selectedTime, visibleConstellations]);
+    }, [filteredPoints, responseData, selectedTime, visibleConstellations, containerSize]);
 
     return (
         <div className="p-6 bg-white shadow-md rounded-md mt-6">
             <h3 className="text-xl font-semibold mb-4">SkyPlot</h3>
 
-            {/* Constellation Toggles */}
             <div className="mb-4 flex flex-wrap gap-4">
                 {uniqueConstellations.map((type) => (
                     <label key={type} className="flex items-center space-x-2">
@@ -226,9 +236,14 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                 ))}
             </div>
 
-            {/* D3 SVG Chart */}
-            <div className="h-[600px] w-[600px] mx-auto relative">
-                <svg ref={svgRef} width={width} height={height}></svg>
+            {/* Responsive container */}
+            <div ref={containerRef} className="w-full max-w-[700px] mx-auto relative aspect-square">
+                <svg
+                    ref={svgRef}
+                    width={containerSize.width}
+                    height={containerSize.height}
+                    viewBox={`0 0 ${baseWidth} ${baseHeight}`}
+                />
             </div>
 
             {/* Time Slider */}
