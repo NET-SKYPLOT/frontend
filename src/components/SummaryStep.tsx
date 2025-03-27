@@ -37,23 +37,21 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         setError(null);
 
         try {
-            // Extract "YYYY-MM-DD" from Date object
+            // Format date and time
             const date = formData.date;
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, "0");
             const day = String(date.getDate()).padStart(2, "0");
             const formattedDate = `${year}-${month}-${day}`;
 
-            // Extract "HH:mm:ss" from Time object
             const time = formData.time;
             const hours = String(time.getHours()).padStart(2, "0");
             const minutes = String(time.getMinutes()).padStart(2, "0");
             const seconds = String(time.getSeconds()).padStart(2, "0");
             const formattedTime = `${hours}:${minutes}:${seconds}`;
 
-            // Combine into full ISO string
             const localDateTime = new Date(`${formattedDate}T${formattedTime}`);
-            const startDateTime = localDateTime.toISOString(); // always in UTC
+            const startDateTime = localDateTime.toISOString();
 
             const requestData = {
                 start_datetime: startDateTime,
@@ -83,8 +81,18 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 application: formData.receivers.length > 1 ? "differential_gnss" : "single",
             };
 
-            const response = await axios.post("/api/v1/plan", requestData, { timeout: 1200000 });
+            const response = await axios.post("/api/v1/plan", requestData, {timeout: 1200000});
 
+            // Save results in localStorage with timestamp
+            const timestampedData = {
+                requestData,
+                responseData: response.data,
+                formData,
+                timestamp: Date.now()
+            };
+            localStorage.setItem("planning_result", JSON.stringify(timestampedData));
+
+            // Navigate to results page
             navigate("/result", {
                 state: {
                     formData,
@@ -131,8 +139,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                     <p className="text-gray-500">No constellations selected.</p>
                 )}
             </div>
-
-
 
             {/* Receivers List */}
             <div className="p-4 border rounded-md bg-gray-50">
