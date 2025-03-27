@@ -1,6 +1,5 @@
 import {useState, useEffect} from "react";
 import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
 import ImageCarousel from "../components/ImageCarousel";
 
 import Introduction from "../components/dashboard-components/Introduction";
@@ -30,13 +29,9 @@ const Dashboard = () => {
 
     return (
         <div className="flex h-screen w-screen bg-gray-50">
-            <Sidebar/>
+            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab}/>
 
             <main className={`flex-1 p-6 bg-white shadow-md overflow-y-auto ${!isMobile ? "ml-64" : ""}`}>
-                <div className="p-6 bg-white shadow-md sticky top-0 z-10">
-                    <Navbar activeTab={activeTab} setActiveTab={setActiveTab}/>
-                </div>
-
                 <div className="flex-1 overflow-y-auto p-6">
                     <ImageCarousel/>
                     <div className="mt-8">{tabComponents[activeTab]}</div>
