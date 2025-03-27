@@ -87,7 +87,6 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         })
         .filter((p): p is SatellitePoint => p !== null);
 
-    // Resize observer to track parent width
     useEffect(() => {
         const observer = new ResizeObserver((entries) => {
             for (let entry of entries) {
@@ -110,7 +109,6 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
         const cy = center.y * scale;
         const rScale = baseRadius * scale;
 
-        // Background circle
         svg
             .append("circle")
             .attr("cx", cx)
@@ -119,7 +117,6 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
             .attr("fill", "#f9fafb")
             .attr("stroke", "#ccc");
 
-        // Rings
         [30, 60, 90].forEach((e) => {
             const r = (90 - e) * (rScale / 90);
             svg
@@ -132,7 +129,6 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                 .attr("stroke-dasharray", "2,2");
         });
 
-        // Axes
         const directions = [
             {angle: 0, label: "N"},
             {angle: 90, label: "E"},
@@ -242,7 +238,6 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
                     ref={svgRef}
                     width={containerSize.width}
                     height={containerSize.height}
-                    viewBox={`0 0 ${baseWidth} ${baseHeight}`}
                 />
             </div>
 
