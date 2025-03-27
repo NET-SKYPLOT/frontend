@@ -1,6 +1,6 @@
 import {Link, useLocation} from "react-router-dom";
 import {useState, useEffect} from "react";
-import {Menu, Home, Book, BookOpenText, ClipboardList, X, Layers, Users, Code} from "lucide-react";
+import {Menu, Home, Book, BookOpenText, ClipboardList, X, Layers, Users, Code, ShieldCheck} from "lucide-react";
 
 const HomeTabs = [
     {name: "Introduction", icon: <BookOpenText size={18}/>},
@@ -115,6 +115,8 @@ const Sidebar = ({activeTab, setActiveTab}: {
                         )}
                         <NavItem icon={<Book size={20}/>} label="Documentations" link="/documentations"
                                  active={location.pathname === "/documentations"}/>
+                        <NavItem icon={<ShieldCheck size={20}/>} label="Privacy Policy" link="/privacy-policy"
+                                 active={location.pathname === "/privacy-policy"}/>
                     </nav>
 
                     <div className="p-6 absolute bottom-0 w-full">
@@ -154,6 +156,8 @@ const Sidebar = ({activeTab, setActiveTab}: {
                             )}
                             <NavItem icon={<Book size={24}/>} label="Documentations" link="/documentations"
                                      active={location.pathname === "/documentations"} setIsOpen={setIsOpen} isMobile/>
+                            <NavItem icon={<ShieldCheck size={24}/>} label="Privacy Policy" link="/privacy-policy"
+                                     active={location.pathname === "/privacy-policy"} setIsOpen={setIsOpen} isMobile/>
                             <Link to="/planning" onClick={() => setIsOpen(false)} className="block w-full px-2">
                                 <button
                                     className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-md flex items-center justify-center gap-2">
