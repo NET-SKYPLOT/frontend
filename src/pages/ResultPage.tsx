@@ -7,6 +7,8 @@ import SatelliteVisibility from "../components/SatelliteVisibility";
 import SkyPlot from "../components/SkyPlot";
 import ElevationPlot from "../components/ElevationPlot";
 import WorldView from "../components/WorldView";
+import {FileDown, Trash2} from "lucide-react";
+
 
 const ResultPage: React.FC = () => {
     const location = useLocation();
@@ -22,6 +24,14 @@ const ResultPage: React.FC = () => {
         contentRef: resultRef,
         documentTitle: "Planning Results",
     });
+
+    const handleClearResults = () => {
+        localStorage.removeItem("planning_result");
+        setFormData(null);
+        setRequestData(null);
+        setResponseData(null);
+        setExpired(true);
+    };
 
     useEffect(() => {
         const handleResize = () => {
@@ -40,13 +50,21 @@ const ResultPage: React.FC = () => {
                     const parsed = JSON.parse(saved);
                     const now = Date.now();
                     if (now - parsed.timestamp < 15 * 60 * 1000) {
-                        setFormData(parsed.formData);
-                        setRequestData(parsed.requestData);
-                        setResponseData(parsed.responseData);
-                        setExpired(false);
-                    } else {
-                        localStorage.removeItem("planning_result");
-                        setExpired(true);
+                        const restoredDate = new Date(parsed.formData.date);
+                        const restoredTime = new Date(parsed.formData.time);
+
+                        if (!isNaN(restoredDate.getTime()) && !isNaN(restoredTime.getTime())) {
+                            parsed.formData.date = restoredDate;
+                            parsed.formData.time = restoredTime;
+
+                            setFormData(parsed.formData);
+                            setRequestData(parsed.requestData);
+                            setResponseData(parsed.responseData);
+                            setExpired(false);
+                        } else {
+                            localStorage.removeItem("planning_result");
+                            setExpired(true);
+                        }
                     }
                 } catch {
                     setExpired(true);
@@ -72,12 +90,20 @@ const ResultPage: React.FC = () => {
 
                     {/* Conditional Export Button */}
                     {responseData && (
-                        <div className="flex justify-end mb-6">
+                        <div className="flex justify-between items-center mb-6">
                             <button
                                 onClick={() => handlePrint()}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center gap-2"
                             >
+                                <FileDown size={18}/>
                                 Export as PDF
+                            </button>
+                            <button
+                                onClick={handleClearResults}
+                                className="ml-4 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded flex items-center gap-2"
+                            >
+                                <Trash2 size={18}/>
+                                Clear Results
                             </button>
                         </div>
                     )}

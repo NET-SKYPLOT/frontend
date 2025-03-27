@@ -87,7 +87,11 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
             const timestampedData = {
                 requestData,
                 responseData: response.data,
-                formData,
+                formData: {
+                    ...formData,
+                    date: formData.date.toISOString(),
+                    time: formData.time.toISOString(),
+                },
                 timestamp: Date.now()
             };
             localStorage.setItem("planning_result", JSON.stringify(timestampedData));
