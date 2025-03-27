@@ -237,7 +237,7 @@ const SkyPlot: React.FC<SkyPlotProps> = ({responseData}) => {
             </div>
 
             {/* Responsive container */}
-            <div ref={containerRef} className="w-full max-w-[700px] mx-auto relative aspect-square">
+            <div ref={containerRef} className="w-full max-w-[700px] mx-auto relative">
                 <svg
                     ref={svgRef}
                     width={containerSize.width}
