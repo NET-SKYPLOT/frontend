@@ -156,7 +156,7 @@ const ResultPage: React.FC = () => {
                                 <p><strong>Date:</strong> {formData.date?.toLocaleDateString()}</p>
                                 <p><strong>Time:</strong> {formData.time?.toLocaleTimeString()}</p>
                                 <p><strong>Duration:</strong> {formData.duration} minutes</p>
-                                <p><strong>Time Zone:</strong> {formData.timezone}</p>
+                                <p><strong>Time Zone:</strong> {formData.timezone?.label}</p>
                                 <p><strong>Application
                                     Type:</strong> {requestData.application === "differential_gnss" ? "Multiple Receivers" : "Single Receiver"}
                                 </p>
