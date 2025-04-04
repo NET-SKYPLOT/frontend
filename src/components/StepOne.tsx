@@ -15,35 +15,55 @@ interface StepOneProps {
     nextStep: () => void;
 }
 
+interface TimezoneOption {
+    value: string;
+    label: string;
+}
+
 const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
-    const isValidTimezone = (tz: string): boolean => {
-        // Check for valid IANA timezone
+    const formatTimezone = (tz: string): TimezoneOption => ({
+        value: tz,
+        label: tz === 'UTC' ? 'UTC (Coordinated Universal Time)' : tz.replace(/_/g, ' ')
+    });
+
+    const timezones = React.useMemo(() => {
         try {
-            if (Intl.supportedValuesOf && Intl.supportedValuesOf('timeZone').includes(tz)) {
-                return true;
+            if (typeof Intl.supportedValuesOf === 'function') {
+                const supportedZones = Intl.supportedValuesOf('timeZone');
+                return ['UTC', ...supportedZones.filter(tz => tz !== 'UTC')];
             }
         } catch (e) {
-            console.warn("Couldn't verify IANA timezone");
+            console.warn("Intl.supportedValuesOf not supported in this browser");
         }
 
-        // Check for UTC offset format (±HH:MM or ±HHMM or ±HH)
-        const offsetRegex = /^[+-]([0-1]?[0-9]|2[0-3]):?([0-5][0-9])?$/;
-        if (offsetRegex.test(tz)) {
-            return true;
-        }
+        return [
+            'UTC',
+            'America/New_York',
+            'America/Chicago',
+            'America/Denver',
+            'America/Los_Angeles',
+            'Europe/London',
+            'Europe/Berlin',
+            'Asia/Tokyo',
+            'Australia/Sydney',
+        ];
+    }, []);
 
-        // Check for special values
-        return tz === "UTC" || tz === "GMT" || tz === "Z";
+    const isValidTimezone = (tz: string): boolean => {
+        return timezones.includes(tz);
     };
 
     const handleTimezoneChange = (tz: ITimezone) => {
-        // Extract the raw timezone string
-        const timezoneValue = typeof tz === "string" ? tz : tz.value;
+        let timezoneValue: string;
+        if (typeof tz === 'string') {
+            timezoneValue = tz;
+        } else {
+            timezoneValue = tz.value;
+        }
 
-        // Validate the timezone or default to UTC
         const validatedTimezone = timezoneValue && isValidTimezone(timezoneValue)
-            ? timezoneValue
-            : "UTC";
+            ? formatTimezone(timezoneValue)
+            : formatTimezone("UTC");
 
         setFormData({
             ...formData,
@@ -51,31 +71,11 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
         });
     };
 
-    // Get supported timezones with proper typing and fallback
-    const getTimezones = () => {
-        try {
-            if (typeof Intl.supportedValuesOf === 'function') {
-                return Object.fromEntries(
-                    Intl.supportedValuesOf('timeZone').map((tz: string) => [tz, tz])
-                );
-            }
-        } catch (e) {
-            console.warn("Intl.supportedValuesOf not supported in this browser");
-        }
-
-        // Fallback timezones
-        return {
-            'UTC': 'UTC',
-            'America/New_York': 'America/New_York',
-            'America/Chicago': 'America/Chicago',
-            'America/Denver': 'America/Denver',
-            'America/Los_Angeles': 'America/Los_Angeles',
-            'Europe/London': 'Europe/London',
-            'Europe/Berlin': 'Europe/Berlin',
-            'Asia/Tokyo': 'Asia/Tokyo',
-            'Australia/Sydney': 'Australia/Sydney',
-        };
-    };
+    const timezoneOptions = React.useMemo(() => {
+        return Object.fromEntries(
+            timezones.map(tz => [tz, formatTimezone(tz).label])
+        );
+    }, [timezones]);
 
     return (
         <div className="space-y-6">
@@ -87,6 +87,7 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                     selected={formData.date}
                     onChange={(date) => setFormData({...formData, date})}
                     className="border p-2 rounded w-full"
+                    minDate={new Date()}
                 />
             </div>
 
@@ -108,8 +109,8 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                 <label className="block text-lg font-medium">
                     Duration (minutes){" "}
                     <span className="text-gray-500">
-            ({(Number(formData.duration) / 60).toFixed(2)} hrs)
-          </span>
+                        ({(Number(formData.duration) / 60).toFixed(2)} hrs)
+                    </span>
                 </label>
                 <input
                     type="number"
@@ -129,26 +130,22 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
             <div>
                 <label className="block text-lg font-medium">Select Timezone:</label>
                 <TimezoneSelect
-                    value={formData.timezone || "UTC"}
+                    value={formData.timezone || formatTimezone("UTC")}
                     onChange={handleTimezoneChange}
                     className="w-full"
                     labelStyle="altName"
-                    timezones={{
-                        ...getTimezones(),
-                        "UTC": "UTC",
-                        "GMT": "GMT",
-                        "Z": "Z",
-                    }}
+                    timezones={timezoneOptions}
+                    isSearchable={true}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                    Accepts: IANA names (e.g., <code>America/New_York</code>) or UTC offsets (e.g., <code>-05:00</code>).
-                    Invalid entries will default to UTC.
+                    Only IANA timezone names from the dropdown are accepted. Invalid entries will default to UTC.
                 </p>
             </div>
 
             <button
                 onClick={nextStep}
                 className="bg-blue-500 text-white px-6 py-2 rounded w-full mt-4 hover:bg-blue-600"
+                disabled={!formData.date || !formData.time}
             >
                 Next
             </button>

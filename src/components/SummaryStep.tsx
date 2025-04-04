@@ -31,21 +31,11 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
 
     const demSource = selectedDem.source === "Piemote Geoportale" ? "pgp" : "ot";
 
-    const formatTimezoneForDisplay = (timezone: string) => {
-        if (!timezone) return "UTC (default)";
-        if (timezone === "Z") return "UTC";
-        if (timezone.startsWith("+") || timezone.startsWith("-")) {
-            return `UTC${timezone.includes(":") ? timezone : `${timezone.substring(0, 3)}:${timezone.substring(3)}`}`;
-        }
-        return timezone;
-    };
-
     const handleSubmit = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            // Format date and time with timezone
             const date = formData.date;
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -58,9 +48,11 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
             const seconds = String(time.getSeconds()).padStart(2, "0");
             const formattedTime = `${hours}:${minutes}:${seconds}`;
 
+            const localDateTime = new Date(`${formattedDate}T${formattedTime}`);
+            const startDateTime = localDateTime.toISOString();
+
             const requestData = {
-                start_datetime: `${formattedDate}T${formattedTime}`,
-                timezone: formData.timezone || "UTC", // Include timezone in request
+                start_datetime: startDateTime,
                 duration_hours: Number(formData.duration) / 60,
                 cutoff_angle: Number(formData.cutoffAngle) || 0,
                 dem: {
@@ -96,7 +88,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                     ...formData,
                     date: formData.date.toISOString(),
                     time: formData.time.toISOString(),
-                    timezone: formData.timezone || "UTC",
                 },
                 timestamp: Date.now()
             };
@@ -104,10 +95,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
 
             navigate("/result", {
                 state: {
-                    formData: {
-                        ...formData,
-                        timezone: formData.timezone || "UTC",
-                    },
+                    formData,
                     requestData,
                     responseData: response.data,
                 },
@@ -133,7 +121,7 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 <p><strong>Date:</strong> {formData.date?.toLocaleDateString()}</p>
                 <p><strong>Time:</strong> {formData.time?.toLocaleTimeString()}</p>
                 <p><strong>Duration:</strong> {formData.duration} minutes</p>
-                <p><strong>Timezone:</strong> {formatTimezoneForDisplay(formData.timezone)}</p>
+                <p><strong>Timezone:</strong> {formData.timezone?.label}</p>
             </div>
 
             <div className="p-4 border rounded-md bg-gray-50">
