@@ -30,8 +30,8 @@ const StepTwo: React.FC<StepTwoProps> = ({formData, setFormData, nextStep, prevS
                     {
                         id: generateUniqueId(),
                         role: "base",
-                        lat: 45.0703,
-                        lon: 7.6869,
+                        lat: 45.06721069132743,
+                        lon: 7.656497777193932,
                     },
                 ],
             });
@@ -42,14 +42,14 @@ const StepTwo: React.FC<StepTwoProps> = ({formData, setFormData, nextStep, prevS
                     {
                         id: generateUniqueId(),
                         role: "base",
-                        lat: 45.0703,
-                        lon: 7.6869,
+                        lat: 45.06721069132743,
+                        lon: 7.656497777193932,
                     },
                     {
                         id: generateUniqueId(),
                         role: "rover",
-                        lat: 45.0703,
-                        lon: 7.6869,
+                        lat: 45.06721069132743,
+                        lon: 7.656497777193932,
                     },
                 ],
             });
@@ -65,8 +65,8 @@ const StepTwo: React.FC<StepTwoProps> = ({formData, setFormData, nextStep, prevS
                     {
                         id: generateUniqueId(),
                         role: "rover",
-                        lat: 45.0703,
-                        lon: 7.6869,
+                        lat: 45.06721069132743,
+                        lon: 7.656497777193932,
                     },
                 ],
             });
