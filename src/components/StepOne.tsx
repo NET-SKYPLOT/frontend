@@ -138,7 +138,15 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                     isSearchable={true}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                    Only IANA timezone names from the dropdown are accepted. Invalid entries will default to UTC.
+                    Only IANA timezone names from the dropdown are accepted. Invalid entries will default to UTC.{" "}
+                    <a
+                        href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                    >
+                        View complete list of IANA timezones
+                    </a>
                 </p>
             </div>
 
