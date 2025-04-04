@@ -42,7 +42,6 @@ const ResultPage: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        // If no state passed, try loading from localStorage
         if (!requestData || !responseData || !formData) {
             const saved = localStorage.getItem("planning_result");
             if (saved) {
@@ -124,6 +123,26 @@ const ResultPage: React.FC = () => {
                         </div>
                     )}
 
+                    {/*TODO*/}
+
+                    <div className="mb-12">
+                        <h2 className="text-2xl font-semibold text-blue-700 mb-4">
+                            Request Data
+                        </h2>
+                        <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm text-gray-800">
+                                    {JSON.stringify(requestData, null, 2)}
+                                </pre>
+                    </div>
+
+                    {/*<div className="mb-12">*/}
+                    {/*    <h2 className="text-2xl font-semibold text-blue-700 mb-4">*/}
+                    {/*        API Response*/}
+                    {/*    </h2>*/}
+                    {/*    <pre className="bg-gray-100 p-4 rounded overflow-x-auto text-sm text-gray-800">*/}
+                    {/*                {JSON.stringify(responseData, null, 2)}*/}
+                    {/*            </pre>*/}
+                    {/*</div>*/}
+
                     {/* Planning Results Section */}
                     {!expired && requestData && responseData && formData && (
                         <div ref={resultRef}>
@@ -137,7 +156,7 @@ const ResultPage: React.FC = () => {
                                 <p><strong>Date:</strong> {formData.date?.toLocaleDateString()}</p>
                                 <p><strong>Time:</strong> {formData.time?.toLocaleTimeString()}</p>
                                 <p><strong>Duration:</strong> {formData.duration} minutes</p>
-                                <p><strong>Time Zone:</strong> {formData.timezone?.label}</p>
+                                <p><strong>Time Zone:</strong> {formData.timezone}</p>
                                 <p><strong>Application
                                     Type:</strong> {requestData.application === "differential_gnss" ? "Multiple Receivers" : "Single Receiver"}
                                 </p>

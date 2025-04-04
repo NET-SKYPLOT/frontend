@@ -10,7 +10,6 @@ interface SummaryStepProps {
     prevStep: () => void;
 }
 
-// Define Leaflet marker icon
 const markerIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
     shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
@@ -32,12 +31,21 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
 
     const demSource = selectedDem.source === "Piemote Geoportale" ? "pgp" : "ot";
 
+    const formatTimezoneForDisplay = (timezone: string) => {
+        if (!timezone) return "UTC (default)";
+        if (timezone === "Z") return "UTC";
+        if (timezone.startsWith("+") || timezone.startsWith("-")) {
+            return `UTC${timezone.includes(":") ? timezone : `${timezone.substring(0, 3)}:${timezone.substring(3)}`}`;
+        }
+        return timezone;
+    };
+
     const handleSubmit = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            // Format date and time
+            // Format date and time with timezone
             const date = formData.date;
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -50,11 +58,9 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
             const seconds = String(time.getSeconds()).padStart(2, "0");
             const formattedTime = `${hours}:${minutes}:${seconds}`;
 
-            const localDateTime = new Date(`${formattedDate}T${formattedTime}`);
-            const startDateTime = localDateTime.toISOString();
-
             const requestData = {
-                start_datetime: startDateTime,
+                start_datetime: `${formattedDate}T${formattedTime}`,
+                timezone: formData.timezone || "UTC", // Include timezone in request
                 duration_hours: Number(formData.duration) / 60,
                 cutoff_angle: Number(formData.cutoffAngle) || 0,
                 dem: {
@@ -83,7 +89,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
 
             const response = await axios.post("/api/v1/plan", requestData, {timeout: 1200000});
 
-            // Save results in localStorage with timestamp
             const timestampedData = {
                 requestData,
                 responseData: response.data,
@@ -91,15 +96,18 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                     ...formData,
                     date: formData.date.toISOString(),
                     time: formData.time.toISOString(),
+                    timezone: formData.timezone || "UTC",
                 },
                 timestamp: Date.now()
             };
             localStorage.setItem("planning_result", JSON.stringify(timestampedData));
 
-            // Navigate to results page
             navigate("/result", {
                 state: {
-                    formData,
+                    formData: {
+                        ...formData,
+                        timezone: formData.timezone || "UTC",
+                    },
                     requestData,
                     responseData: response.data,
                 },
@@ -116,21 +124,18 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         <div className="space-y-6">
             <h2 className="text-2xl font-semibold">Final Step: Review & Submit</h2>
 
-            {/* Application Type */}
             <div className="p-4 border rounded-md bg-gray-100">
                 <p><strong>Application
                     Type:</strong> {formData.receivers.length > 1 ? "Multiple Receivers" : "Single Receiver"}</p>
             </div>
 
-            {/* General Planning Information */}
             <div className="p-4 border rounded-md bg-gray-50">
                 <p><strong>Date:</strong> {formData.date?.toLocaleDateString()}</p>
                 <p><strong>Time:</strong> {formData.time?.toLocaleTimeString()}</p>
                 <p><strong>Duration:</strong> {formData.duration} minutes</p>
-                <p><strong>Timezone:</strong> {formData.timezone?.label}</p>
+                <p><strong>Timezone:</strong> {formatTimezoneForDisplay(formData.timezone)}</p>
             </div>
 
-            {/* Selected GNSS Constellations */}
             <div className="p-4 border rounded-md bg-gray-50">
                 <h3 className="text-xl font-semibold">Selected GNSS Constellations</h3>
                 {formData.constellations.length > 0 ? (
@@ -144,7 +149,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 )}
             </div>
 
-            {/* Receivers List */}
             <div className="p-4 border rounded-md bg-gray-50">
                 <h3 className="text-xl font-semibold">Receivers</h3>
                 {formData.receivers.map((receiver: any, rIndex: number) => (
@@ -155,7 +159,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                         <p><strong>Location:</strong> Lat {receiver.lat}, Lon {receiver.lon}</p>
                         <p><strong>Height from Ground:</strong> {receiver.height} meters</p>
 
-                        {/* Obstacles Section */}
                         {receiver.obstacles && receiver.obstacles.length > 0 && (
                             <div className="mt-3 p-3 border rounded-md bg-gray-100">
                                 <h4 className="text-lg font-semibold">Obstacles</h4>
@@ -165,7 +168,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                                         <p><strong>ID:</strong> {obstacle.id}</p>
                                         <p><strong>Obstacle Height:</strong> {obstacle.totalHeight} meters</p>
 
-                                        {/* Obstacle Vertices */}
                                         <div className="mt-2">
                                             <p><strong>Vertices:</strong></p>
                                             <ul className="ml-4 list-disc text-gray-700">
@@ -184,12 +186,10 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 ))}
             </div>
 
-            {/* Selected Cutoff Angle */}
             <div className="p-4 border rounded-md bg-gray-50">
                 <p><strong>Cutoff Angle:</strong> {formData.cutoffAngle} degree</p>
             </div>
 
-            {/* Selected DEM Section */}
             <div className="p-4 border rounded-md bg-gray-50">
                 <h3 className="text-xl font-semibold">Selected Digital Elevation Model (DEM)</h3>
                 {formData.selectedDEM === "no_dem" ? (
@@ -202,7 +202,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 )}
             </div>
 
-            {/* Selected Locations Map */}
             {formData.receivers && formData.receivers.length > 0 && (
                 <div className="p-4 border rounded-md bg-gray-50">
                     <h3 className="text-xl font-semibold">Selected Locations</h3>
@@ -228,10 +227,8 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 </div>
             )}
 
-            {/* Error Message */}
             {error && <p className="text-red-500">{error}</p>}
 
-            {/* Loading Indicator */}
             {loading && (
                 <div className="flex justify-center items-center py-4">
                     <svg className="animate-spin h-8 w-8 text-blue-500" viewBox="0 0 24 24">
@@ -243,7 +240,6 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 </div>
             )}
 
-            {/* Navigation Buttons */}
             <div className="flex justify-between mt-4">
                 <button onClick={prevStep} className="bg-gray-400 text-white px-6 py-2 rounded w-1/4 mx-1">
                     Back
