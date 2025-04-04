@@ -36,20 +36,17 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         setError(null);
 
         try {
-            const date = formData.date;
+            const date = new Date(formData.date);
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, "0");
             const day = String(date.getDate()).padStart(2, "0");
-            const formattedDate = `${year}-${month}-${day}`;
 
-            const time = formData.time;
+            const time = new Date(formData.time);
             const hours = String(time.getHours()).padStart(2, "0");
             const minutes = String(time.getMinutes()).padStart(2, "0");
-            const seconds = String(time.getSeconds()).padStart(2, "0");
-            const formattedTime = `${hours}:${minutes}:${seconds}`;
+            const seconds = "00";
 
-            const localDateTime = new Date(`${formattedDate}T${formattedTime}`);
-            const startDateTime = localDateTime.toISOString();
+            const startDateTime = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.000Z`
 
             const requestData = {
                 start_datetime: startDateTime,
@@ -87,8 +84,8 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
                 responseData: response.data,
                 formData: {
                     ...formData,
-                    date: formData.date.toISOString(),
-                    time: formData.time.toISOString(),
+                    date: formData.date,
+                    time: formData.time,
                 },
                 timestamp: Date.now()
             };
@@ -109,6 +106,24 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
         }
     };
 
+    const displayDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
+    const displayTime = (timeString: string) => {
+        const time = new Date(timeString);
+        return time.toLocaleTimeString(undefined, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        });
+    };
+
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-semibold">Final Step: Review & Submit</h2>
@@ -119,8 +134,8 @@ const SummaryStep: React.FC<SummaryStepProps> = ({formData, prevStep}) => {
             </div>
 
             <div className="p-4 border rounded-md bg-gray-50">
-                <p><strong>Date:</strong> {formData.date?.toLocaleDateString()}</p>
-                <p><strong>Time:</strong> {formData.time?.toLocaleTimeString()}</p>
+                <p><strong>Date:</strong> {displayDate(formData.date)}</p>
+                <p><strong>Time:</strong> {displayTime(formData.time)}</p>
                 <p><strong>Duration:</strong> {formData.duration} minutes</p>
                 <p><strong>Timezone:</strong> {formData.timezone?.label}</p>
             </div>

@@ -49,10 +49,6 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
         ];
     }, []);
 
-    const isValidTimezone = (tz: string): boolean => {
-        return timezones.includes(tz);
-    };
-
     const handleTimezoneChange = (tz: ITimezone) => {
         let timezoneValue: string;
         if (typeof tz === 'string') {
@@ -61,13 +57,33 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
             timezoneValue = tz.value;
         }
 
-        const validatedTimezone = timezoneValue && isValidTimezone(timezoneValue)
-            ? formatTimezone(timezoneValue)
-            : formatTimezone("UTC");
+        setFormData({
+            ...formData,
+            timezone: {
+                value: timezoneValue,
+                label: formatTimezone(timezoneValue).label
+            }
+        });
+    };
+
+    const handleDateChange = (date: Date | null) => {
+        if (!date) return;
 
         setFormData({
             ...formData,
-            timezone: validatedTimezone
+            date: new Date(date.getFullYear(), date.getMonth(), date.getDate())
+        });
+    };
+
+    const handleTimeChange = (time: Date | null) => {
+        if (!time) return;
+
+        const timeOnly = new Date(0);
+        timeOnly.setHours(time.getHours(), time.getMinutes());
+
+        setFormData({
+            ...formData,
+            time: timeOnly
         });
     };
 
@@ -85,9 +101,10 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                 <label className="block text-lg font-medium">Select Date:</label>
                 <DatePicker
                     selected={formData.date}
-                    onChange={(date) => setFormData({...formData, date})}
+                    onChange={handleDateChange}
                     className="border p-2 rounded w-full"
                     minDate={new Date()}
+                    dateFormat="MMMM d, yyyy"
                 />
             </div>
 
@@ -95,12 +112,12 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                 <label className="block text-lg font-medium">Select Time:</label>
                 <DatePicker
                     selected={formData.time}
-                    onChange={(time) => setFormData({...formData, time})}
+                    onChange={handleTimeChange}
                     showTimeSelect
                     showTimeSelectOnly
                     timeIntervals={60}
                     timeCaption="Time"
-                    dateFormat="HH:mm"
+                    dateFormat="h:mm aa"
                     className="border p-2 rounded w-full"
                 />
             </div>
@@ -138,7 +155,7 @@ const StepOne: React.FC<StepOneProps> = ({formData, setFormData, nextStep}) => {
                     isSearchable={true}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                    Only IANA timezone names from the dropdown are accepted. Invalid entries will default to UTC.{" "}
+                    Only IANA timezone names from the dropdown are accepted.
                     <a
                         href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
                         target="_blank"
