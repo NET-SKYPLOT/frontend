@@ -1,4 +1,4 @@
-import {useState, useRef} from "react";
+import {useState, useRef, useEffect} from "react";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
 import StepThree from "./StepThree";
@@ -39,9 +39,26 @@ const PlanningWizard = () => {
     });
 
     const [selectedReceiver, setSelectedReceiver] = useState<Receiver | null>(null);
+    const nodeRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    const nextStep = () => setStep((prev) => prev + 1);
-    const prevStep = () => setStep((prev) => prev - 1);
+    const scrollToTop = () => {
+        if (containerRef.current) {
+            containerRef.current.scrollTo({top: 0, behavior: 'smooth'});
+        } else {
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+    };
+
+    const nextStep = () => {
+        setStep((prev) => prev + 1);
+        scrollToTop();
+    };
+
+    const prevStep = () => {
+        setStep((prev) => prev - 1);
+        scrollToTop();
+    };
 
     const startOver = () => {
         setFormData({
@@ -53,8 +70,8 @@ const PlanningWizard = () => {
                 {
                     id: generateUniqueId(),
                     role: "base",
-                    lat: 45.0703,
-                    lon: 7.6869,
+                    lat: 45.06721069132743,
+                    lon: 7.656497777193932,
                     height: 0,
                 } as Receiver,
             ],
@@ -63,12 +80,15 @@ const PlanningWizard = () => {
             selectedDEM: null,
         });
         setStep(1);
+        scrollToTop();
     };
 
-    const nodeRef = useRef(null);
+    useEffect(() => {
+        scrollToTop();
+    }, []);
 
     return (
-        <div className="w-full max-w-3xl mx-auto bg-white p-6 shadow-lg rounded-md relative">
+        <div className="w-full max-w-3xl mx-auto bg-white p-6 shadow-lg rounded-md relative" ref={containerRef}>
             <TransitionGroup>
                 <CSSTransition key={step} timeout={300} classNames="fade" nodeRef={nodeRef}>
                     <div ref={nodeRef}>
